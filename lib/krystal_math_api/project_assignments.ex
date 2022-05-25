@@ -170,25 +170,33 @@ defmodule KrystalMathApi.ProjectAssignments do
 
 ######  COUNTERS ##############
 
-def user_assignment(team_id, category_id ,user_id) do
+def user_assignment_all(team_id, category_id ,user_id) do
   
-  assignments = from( p in ProjectAssignment,select: %{projects_count: count(p.id)}, where: p.project_category_type_id == ^category_id and p.team_id == ^team_id and p.user_id == ^user_id )
- Repo.all(assignments)
+  assignments = from( p in ProjectAssignment,select: count(p.id), where: p.project_category_type_id == ^category_id and p.team_id == ^team_id and p.user_id == ^user_id )
+ Repo.one(assignments)
 
 end
 def user_completed_assignment(team_id, category_id, user_id) do
   
   completed = 6 
-  completed_assignments = from( p in ProjectAssignment,select: %{completed_projects: count(p.id)}, where: p.project_category_type_id == ^category_id and p.team_id == ^team_id and p.user_id == ^user_id and p.user_status_id == ^completed)
-  Repo.all(completed_assignments)
+  completed_assignments = from( p in ProjectAssignment,select: count(p.id), where: p.project_category_type_id == ^category_id and p.team_id == ^team_id and p.user_id == ^user_id and p.user_status_id == ^completed)
+  Repo.one(completed_assignments)
  
 end
 def user_pending_assignment(team_id, category_id ,user_id) do
   completed = 6 
-pending_assignments = from( p in ProjectAssignment,select: %{pending_projects: count(p.id)}, where: p.project_category_type_id == ^category_id and p.team_id == ^team_id and p.user_id == ^user_id and p.user_status_id != ^completed)
-  Repo.all(pending_assignments)
+pending_assignments = from( p in ProjectAssignment,select: count(p.id), where: p.project_category_type_id == ^category_id and p.team_id == ^team_id and p.user_id == ^user_id and p.user_status_id != ^completed)
+  Repo.one(pending_assignments)
 end
 
+
+def user_assignment(team_id, category_id ,user_id) do
+  user_assignment_counters = %{
+    all_assignments: user_assignment_all(team_id, category_id, user_id),
+  completed: user_completed_assignment(team_id, category_id, user_id),
+  pending: user_pending_assignment(team_id, category_id, user_id)}
+  user_assignment_counters
+end
 
 
 

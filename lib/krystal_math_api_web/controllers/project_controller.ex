@@ -238,250 +238,99 @@ end
 
 # COUNTERS #####
 
-# Overall Project Counters
-def project_count(conn, _params) do
-    counters = Projects.all_projects_counter()
-    render(conn, "index.json",counters: counters )
+# All Project Counters 
+
+def projects_counter(conn, _params) do
+  project_overview = Projects.projects_counter()
+  render(conn, "full_project_overview.json", project_overview: project_overview)
 end
 
+# Counter by category
 def project_count_by_category(conn, %{"category_type" => category_id}) do
-  counters = Projects.project_counter_category(category_id)
-  render(conn, "index.json",counters: counters )
-end
-
-
-def assigned_project_count(conn, _params) do
-    assigned = Projects.all_assigned_projects_counter()
-    render(conn, "index.json",assigned: assigned )
-end
-def not_assigned_project_count(conn, _params) do
-    not_assigned = Projects.all_not_assigned_projects_counter()
-    render(conn, "index.json",not_assigned: not_assigned )
-end
-
-#Project  Completion 
-def pending_project_count(conn, _params) do
-    pending = Projects.all_pending_projects_counter()
-    render(conn, "index.json",pending: pending )
-end
-def completed_project_count(conn, _params) do
-    completed = Projects.all_completed_projects_counter()
-    render(conn, "index.json",completed: completed )
+  counter = Projects.project_counter_category(category_id)
+  render(conn, "counter_details.json",counter: counter )
 end
 
 #All Projects Status Counters
-# not started 
-def projects_not_started(conn, _params) do
-    not_started = Projects.projects_not_started_status()
-    render(conn, "index.json", not_started: not_started)
-  end
-  # planning 
-  def projects_planning(conn, _params) do
-    planning = Projects.projects_planning_status()
-    render(conn, "index.json", planning: planning)
-  end
-  # under investigation 
-  def projects_under_investigation(conn, _params) do
-    under_investigation = Projects.projects_investigation_status()
-    render(conn, "index.json", under_investigation: under_investigation)
-  end
-  # on hold
-  def projects_hold(conn, _params) do
-    on_hold = Projects.projects_hold_status()
-    render(conn, "index.json", on_hold: on_hold)
-  end
-  # in progress
-  def projects_in_progress(conn, _params) do
-    in_progress = Projects.projects_progress_status()
-    render(conn, "index.json", in_progress: in_progress)
-  end
-  # dev completed
-  def projects_dev_complete(conn, _params) do
-    dev_complete = Projects.projects_dev_complete_status()
-    render(conn, "index.json", dev_complete: dev_complete)
-  end
-  # QA
-  def projects_qa(conn, _params) do
-    qa = Projects.projects_qa_status()
-    render(conn, "index.json", qa: qa)
-  end
-  # Deployed
-  def projects_deployed(conn, _params) do
-    deployed = Projects.projects_deployed_status()
-    render(conn, "index.json", deployed: deployed)
-  end
 
+
+  def projects_status_counter(conn, _params) do
+    project_statsuses = Projects.projects_statuses()
+    render(conn, "project_statuses.json", project_statsuses: project_statsuses)
+  end
 
 #   Project Statuses using categories(  Operational, Strategic)
-
-# not started 
-def projects_category_not_started(conn, %{"category_type" => category_type}) do
-    not_started = Projects.projects_not_started_status_category_type(category_type)
-    render(conn, "index.json", not_started: not_started)
-  end
-  # planning 
-  def projects_category_planning(conn,  %{"category_type" => category_type}) do
-    planning = Projects.projects_planning_status_category_type(category_type)
-    render(conn, "index.json", planning: planning)
-  end
-  # under investigation 
-  def projects_category_under_investigation(conn,  %{"category_type" => category_type}) do
-    under_investigation = Projects.projects_investigation_status_category_type(category_type)
-    render(conn, "index.json", under_investigation: under_investigation)
-  end
-  # on hold
-  def projects_category_hold(conn,  %{"category_type" => category_type}) do
-    on_hold = Projects.projects_hold_status_category_type(category_type)
-    render(conn, "index.json", on_hold: on_hold)
-  end
-  # in progress
-  def projects_category_in_progress(conn,  %{"category_type" => category_type}) do
-    in_progress = Projects.projects_progress_status_category_type(category_type)
-    render(conn, "index.json", in_progress: in_progress)
-  end
-  # dev completed
-  def projects_category_dev_complete(conn,  %{"category_type" => category_type}) do
-    dev_complete = Projects.projects_dev_complete_status_category_type(category_type)
-    render(conn, "index.json", dev_complete: dev_complete)
-  end
-  # QA
-  def projects_category_qa(conn,  %{"category_type" => category_type}) do
-    qa = Projects.projects_qa_status_category_type(category_type)
-    render(conn, "index.json", qa: qa)
-  end
-  # Deployed
-  def projects_category_deployed(conn,  %{"category_type" => category_type}) do
-    deployed = Projects.projects_deployed_status_category_type(category_type)
-    render(conn, "index.json", deployed: deployed)
-  end
+def projects_category_statuses(conn, %{"category_type" => category_type}) do
+  project_statsuses = Projects.projects_statuses_category(category_type)
+  render(conn, "project_statuses.json", project_statsuses: project_statsuses)
+end
 
 ################## TEAM COUNTERS #####################
 
 
-def all_team_projects_count(conn, %{"team_id" => team_id}) do
-    counters = Projects.team_projects_counter(team_id)
-    render(conn, "index.json", counters: counters)
-end
-def team_completed_projects(conn, %{"team_id" => team_id}) do
-    completed = Projects.team_completed_projects_counter(team_id)
-    render(conn, "index.json", completed: completed)
+# Team Overview projects counter
+def team_projects_count(conn, %{"team_id" => team_id}) do
+  project_overview = Projects.team_projects_counter(team_id)
+  render(conn, "project_overview.json", project_overview: project_overview)
 end
 
-def team_pending_projects(conn, %{"team_id" => team_id}) do
-    pending = Projects.team_pending_projects_counter(team_id)
-    render(conn, "index.json", pending: pending)
-end
+# Team completion Counter Project filter by Category
 
-def all_team_projects_category_count(conn, %{"team_id" => team_id,"category_id" => category_id}) do
-  counters = Projects.team_projects_category_counter(team_id,category_id)
-  render(conn, "index.json", counters: counters)
-end
-def team_completed_category_projects(conn, %{"team_id" => team_id,"category_id" => category_id}) do
-  completed = Projects.team_completed_projects_category_counter(team_id,category_id)
-  render(conn, "index.json", completed: completed)
-end
-
-def team_pending_category_projects(conn, %{"team_id" => team_id,"category_id" => category_id}) do
-  pending = Projects.team_pending_projects_category_counter(team_id,category_id)
-  render(conn, "index.json", pending: pending)
+def team_category_projects_count(conn, %{"team_id" => team_id,"category_id" => category_id}) do
+  project_overview = Projects.team_projects_category_counter(team_id,category_id)
+  render(conn, "project_overview_status.json", project_overview: project_overview)
 end
 
 
 #Team Project Statuses using categories( Live Issues, Operational, Strategic)
-
-# not started 
-def team_projects_category_not_started(conn, %{"team_id" => team_id,"category_type" => category_type}) do
-    not_started = Projects.team_projects_not_started_status_category_type(team_id,category_type)
-    render(conn, "index.json", not_started: not_started)
-  end
-  # planning 
-  def team_projects_category_planning(conn,  %{"team_id" => team_id,"category_type" => category_type}) do
-    planning = Projects.team_projects_planning_status_category_type(team_id,category_type)
-    render(conn, "index.json", planning: planning)
-  end
-  # under investigation 
-  def team_projects_category_under_investigation(conn,  %{"team_id" => team_id,"category_type" => category_type}) do
-    under_investigation = Projects.team_projects_investigation_status_category_type(team_id,category_type)
-    render(conn, "index.json", under_investigation: under_investigation)
-  end
-  # on hold
-  def team_projects_category_hold(conn,  %{"team_id" => team_id,"category_type" => category_type}) do
-    on_hold = Projects.team_projects_hold_status_category_type(team_id,category_type)
-    render(conn, "index.json", on_hold: on_hold)
-  end
-  # in progress
-  def team_projects_category_in_progress(conn,  %{"team_id" => team_id,"category_type" => category_type}) do
-    in_progress = Projects.team_projects_progress_status_category_type(team_id,category_type)
-    render(conn, "index.json", in_progress: in_progress)
-  end
-  # dev completed
-  def team_projects_category_dev_complete(conn,  %{"team_id" => team_id,"category_type" => category_type}) do
-    dev_complete = Projects.team_projects_dev_complete_status_category_type(team_id,category_type)
-    render(conn, "index.json", dev_complete: dev_complete)
-  end
-  # QA
-  def team_projects_category_qa(conn,  %{"team_id" => team_id,"category_type" => category_type}) do
-    qa = Projects.team_projects_qa_status_category_type(team_id,category_type)
-    render(conn, "index.json", qa: qa)
-  end
-  # Deployed
-  def team_projects_category_deployed(conn,  %{"team_id" => team_id,"category_type" => category_type}) do
-    deployed = Projects.team_projects_deployed_status_category_type(team_id,category_type)
-    render(conn, "index.json", deployed: deployed)
-  end
+def team_projects_category_statuses(conn, %{"team_id" => team_id,"category_type" => category_type}) do
+  project_statsuses = Projects.team_project_category_status_count(team_id,category_type)
+  render(conn, "project_statuses.json", project_statsuses: project_statsuses)
+end
 
   #Team Overview Project Counters
-  # not started 
-def team_projects_overview_not_started(conn, %{"team_id" => team_id}) do
-  not_started = Projects.team_overview_projects_not_started(team_id)
-  render(conn, "index.json", not_started: not_started)
-end
-# planning 
-def team_projects_overview_planning(conn,  %{"team_id" => team_id}) do
-  planning = Projects.team_overview_projects_planning(team_id)
-  render(conn, "index.json", planning: planning)
-end
-# under investigation 
-def team_projects_overview_under_investigation(conn,  %{"team_id" => team_id}) do
-  under_investigation = Projects.team_overview_projects_investigation(team_id)
-  render(conn, "index.json", under_investigation: under_investigation)
-end
-# on hold
-def team_projects_overview_hold(conn,  %{"team_id" => team_id}) do
-  on_hold = Projects.team_overview_projects_hold(team_id)
-  render(conn, "index.json", on_hold: on_hold)
-end
-# in progress
-def team_projects_overview_in_progress(conn,  %{"team_id" => team_id}) do
-  in_progress = Projects.team_overview_projects_progress(team_id)
-  render(conn, "index.json", in_progress: in_progress)
-end
-# dev completed
-def team_projects_overview_dev_complete(conn,  %{"team_id" => team_id}) do
-  dev_complete = Projects.team_overview_projects_dev_complete(team_id)
-  render(conn, "index.json", dev_complete: dev_complete)
-end
-# QA
-def team_projects_overview_qa(conn,  %{"team_id" => team_id}) do
-  qa = Projects.team_overview_projects_qa(team_id)
-  render(conn, "index.json", qa: qa)
-end
-# Deployed
-def team_projects_overview_deployed(conn,  %{"team_id" => team_id}) do
-  deployed = Projects.team_overview_projects_deployed(team_id)
-  render(conn, "index.json", deployed: deployed)
-end
+  def team_projects_statuses(conn, %{"team_id" => team_id}) do
+    project_statsuses = Projects.team_project_status_count(team_id)
+    render(conn, "project_statuses.json", project_statsuses: project_statsuses)
+  end
+ 
 
 
 
 ############# LIVE ISSUES COUNTER    ################
-def active_team_live_issues_counter(conn, %{"team_id" => team_id}) do
-  live_issues_counter = Projects.active_team_live_issues(team_id)
-  render(conn, "index.json", live_issues_counter: live_issues_counter)
-end
+
 def active_live_issues_counter(conn, _params) do
   live_issues_counter = Projects.active_live_issues()
   render(conn, "index.json", live_issues_counter: live_issues_counter)
 end
 
+def live_issues_counter(conn, _params) do
+  project_overview = Projects.live_issues_count_overview()
+  render(conn, "live_issue_overview.json", project_overview: project_overview)
+end
+
+
+# Live Issues Project status Counter
+def live_issue_status_counter(conn, _params) do
+  project_statsuses = Projects.live_issue_statuses()
+  render(conn, "project_statuses.json", project_statsuses: project_statsuses)
+end
+
+
+
+# TEAM COUNTERS
+
+
+
+def team_live_issues_counter(conn, %{"team_id"=> team_id}) do
+  project_overview = Projects.team_live_issues_count(team_id)
+  render(conn, "live_issue_overview.json", project_overview: project_overview)
+end
+
+
+  #Team Overview Live Issues Project Statuses Counters
+  def team_live_statuses(conn, %{"team_id" => team_id}) do
+    project_statsuses = Projects.team_live_issues_status_count(team_id)
+    render(conn, "project_statuses.json", project_statsuses: project_statsuses)
+  end
 end

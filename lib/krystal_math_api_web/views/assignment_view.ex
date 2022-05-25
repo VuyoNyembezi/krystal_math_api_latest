@@ -398,26 +398,13 @@ def render("deployed.json", %{counter: counter}) do
   }
 end
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
+  def render("assignment_status_overview.json", %{assignment_overview: assignment_overview}) do
+    %{
+      all_assignments: assignment_overview.all_assignments,
+      pending: assignment_overview.pending,
+      completed: assignment_overview.completed
+    }
+  end
 
 end
   

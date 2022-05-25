@@ -300,9 +300,9 @@ def render("task_completed.json", %{counter: counter}) do
 end
 
 
+# Team Counter JSON View
 
-
-  def render("team_task_statuses.json", %{task_statuses: task_statuses}) do
+  def render("task_statuses.json", %{task_statuses: task_statuses}) do
     %{
       not_started: task_statuses.not_started,
       on_hold: task_statuses.on_hold,
@@ -315,12 +315,22 @@ end
 
   # Team tasks
 
-    def render("team_tasks.json", %{team_tasks: team_tasks}) do
+    def render("tasks_overview.json", %{tasks_overview: tasks_overview}) do
     %{
-      team_tasks: team_tasks.team_tasks,
-      over_due: team_tasks.over_due,
-      not_completed: team_tasks.not_completed,
-      completed: team_tasks.completed
+      all_tasks: tasks_overview.all_tasks,
+      over_due: tasks_overview.over_due,
+      not_completed: tasks_overview.not_completed,
+      completed: tasks_overview.completed
     }
   end
+
+
+
+
+
+
+
+
+
+
 end

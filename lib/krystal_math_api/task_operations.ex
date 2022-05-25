@@ -204,62 +204,95 @@ alias KrystalMathApi.Operations.Task
   # overrall task counters 
   def user_completed_tasks_counter(team_id, user_id) do
     completed_key = 5
-    query = from(t in Task,select: %{tasks_count: count(t.id)}, where: t.team_id == ^team_id and t.user_id == ^user_id and t.task_status_id == ^completed_key )
-    Repo.all(query)
+    query = from(t in Task,select: count(t.id), where: t.team_id == ^team_id and t.user_id == ^user_id and t.task_status_id == ^completed_key )
+    Repo.one(query)
   end
   def user_not_completed_tasks_counter(team_id, user_id) do
     completed_key = 5
-    query = from(t in Task,select: %{tasks_count: count(t.id)}, where: t.due_date >= ^DateTime.utc_now and t.team_id == ^team_id and t.user_id == ^user_id and t.task_status_id != ^completed_key  and t.active == true)
-    Repo.all(query)
+    query = from(t in Task,select: count(t.id), where: t.due_date >= ^DateTime.utc_now and t.team_id == ^team_id and t.user_id == ^user_id and t.task_status_id != ^completed_key  and t.active == true)
+    Repo.one(query)
   end
   # all user tasks
   def user_tasks_counter(team_id, user_id) do
-    query = from(t in Task,select: %{tasks_count: count(t.id)}, where: t.team_id == ^team_id and t.user_id == ^user_id  )
-    Repo.all(query)
+    query = from(t in Task,select: count(t.id), where: t.team_id == ^team_id and t.user_id == ^user_id  )
+    Repo.one(query)
   end
 #  all overdue tasks
   def user_overdue_tasks(team_id, user_id) do
     completed_key = 5 
-    query = from(t in Task,select: %{tasks_count: count(t.id)}, where: t.due_date <= ^DateTime.utc_now and t.team_id == ^team_id and t.user_id == ^user_id and t.task_status_id != ^completed_key and  t.active == true )
-    Repo.all(query)
+    query = from(t in Task,select: count(t.id), where: t.due_date <= ^DateTime.utc_now and t.team_id == ^team_id and t.user_id == ^user_id and t.task_status_id != ^completed_key and  t.active == true )
+    Repo.one(query)
   end 
+
+  ####@@@@ LATEST @@@@############
+    # teast tasks statuses
+    def user_task_completion(team_id, user_id) do
+      user_tasks =  %{completed: user_completed_tasks_counter(team_id, user_id),
+      not_completed: user_not_completed_tasks_counter(team_id, user_id),
+      over_due: user_overdue_tasks(team_id, user_id),
+      all_tasks: user_tasks_counter(team_id, user_id)}
+  
+      user_tasks
+      # |> Repo.one(team_tasks)
+      # Repo.load(team_tasks)
+      # JSON.encode(team_tasks)
+      end
+
+
 
 # user task status status counter
 def user_tasks_not_started(team_id, user_id) do
     status_key = 1
-    query = from(t in Task,select: %{task_not_started: count(t.id)}, where: t.team_id == ^team_id and t.user_id == ^user_id and t.task_status_id == ^status_key and t.active == true  )
-    Repo.all(query)
-  end
-  def user_tasks_on_hold(team_id, user_id) do
+    query = from(t in Task,select: count(t.id), where: t.team_id == ^team_id and t.user_id == ^user_id and t.task_status_id == ^status_key and t.active == true  )
+    Repo.one(query)
+end
+def user_tasks_on_hold(team_id, user_id) do
     status_key = 2
-    query = from(t in Task,select: %{task_on_hold: count(t.id)}, where: t.team_id == ^team_id and t.user_id == ^user_id and t.task_status_id == ^status_key and t.active == true)
-    Repo.all(query)
-  end
+    query = from(t in Task,select: count(t.id), where: t.team_id == ^team_id and t.user_id == ^user_id and t.task_status_id == ^status_key and t.active == true)
+    Repo.one(query)
+end
   
-  def user_tasks_in_progress(team_id, user_id) do
+def user_tasks_in_progress(team_id, user_id) do
     status_key = 3
-    query = from(t in Task,select: %{task_in_progress: count(t.id)}, where: t.team_id == ^team_id and t.user_id == ^user_id and t.task_status_id == ^status_key and t.active == true)
-    Repo.all(query)
-  end
+    query = from(t in Task,select: count(t.id), where: t.team_id == ^team_id and t.user_id == ^user_id and t.task_status_id == ^status_key and t.active == true)
+    Repo.one(query)
+end
   
-  def user_tasks_testing(team_id, user_id) do
+def user_tasks_testing(team_id, user_id) do
     status_key = 4
-    query = from(t in Task,select: %{task_testing: count(t.id)}, where: t.team_id == ^team_id and t.user_id == ^user_id  and t.task_status_id == ^status_key and t.active == true)
-    Repo.all(query)
-  end
+    query = from(t in Task,select: count(t.id), where: t.team_id == ^team_id and t.user_id == ^user_id  and t.task_status_id == ^status_key and t.active == true)
+    Repo.one(query)
+end
   
-  def user_tasks_completed(team_id, user_id) do
+def user_tasks_completed(team_id, user_id) do
     status_key = 5
-    query = from(t in Task,select: %{task_completed: count(t.id)}, where: t.team_id == ^team_id and t.user_id == ^user_id  and t.task_status_id == ^status_key )
-    Repo.all(query)
-  end
+    query = from(t in Task,select: count(t.id), where: t.team_id == ^team_id and t.user_id == ^user_id  and t.task_status_id == ^status_key )
+    Repo.one(query)
+end
+
+ ####@@@@ LATEST @@@@############
+    # teast tasks statuses
+    def user_tasks_statuses(team_id, user_id) do
+      user_tasks_status =  %{not_started: user_tasks_not_started(team_id, user_id),
+      on_hold: user_tasks_on_hold(team_id, user_id),
+      in_progress: user_tasks_in_progress(team_id, user_id),
+      testing: user_tasks_testing(team_id, user_id),
+      completed: user_tasks_completed(team_id, user_id)}
+  
+      user_tasks_status
+      end
+
+
+
+
+
 
 ############# TEAM #####
 # Team Status Counters
-def team_completed_tasks(team_id) do
-    completed_key = 5 
-    query = from(t in Task,select: count(t.id), where: t.team_id == ^team_id and t.task_status_id == ^completed_key  and t.active == true)
-    Repo.one(query)
+  def team_completed_tasks(team_id) do
+      completed_key = 5 
+      query = from(t in Task,select: count(t.id), where: t.team_id == ^team_id and t.task_status_id == ^completed_key  and t.active == true)
+      Repo.one(query)
   end
   
   def team_not_completed_tasks(team_id) do
@@ -279,23 +312,16 @@ def team_completed_tasks(team_id) do
     Repo.one(query)
   end
 
+    ####@@@@ LATEST @@@@############
     # teast tasks statuses
-    def team_task_completion(team_id) do
+  def team_task_completion(team_id) do
     team_tasks =  %{completed: team_completed_tasks(team_id),
     not_completed: team_not_completed_tasks(team_id),
     over_due: team_overdue_tasks(team_id),
-    team_tasks: all_team_tasks_count(team_id)}
+    all_tasks: all_team_tasks_count(team_id)}
 
     team_tasks
-    # |> Repo.one(team_tasks)
-    # Repo.load(team_tasks)
-    # JSON.encode(team_tasks)
-    end
-
-
-
-
-
+  end
 
 ##Team Task Status Counters 
   def team_tasks_not_started(team_id) do
@@ -328,17 +354,18 @@ def team_completed_tasks(team_id) do
     Repo.one(query)
   end
 
+
+  ####@@@@ LATEST @@@@############
     # teast tasks statuses
     def team_tasks_statuses(team_id) do
-    team_tasks_status =  %{not_started: team_tasks_not_started(team_id),
+    team_tasks_status =  %{
+    not_started: team_tasks_not_started(team_id),
     on_hold: team_tasks_on_hold(team_id),
     in_progress: team_tasks_in_progress(team_id),
     testing: team_tasks_testing(team_id),
-    completed: team_tasks_completed(team_id)}
+    completed: team_tasks_completed(team_id)
+  }
 
     team_tasks_status
-    # |> Repo.one(team_tasks)
-    # Repo.load(team_tasks)
-    # JSON.encode(team_tasks)
     end
 end

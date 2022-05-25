@@ -104,25 +104,15 @@ defmodule KrystalMathApiWeb.AssignmentController do
 
   ####### Counters ############
 
-   # get all user projects assignments count
-   def user_project_assignment(conn, %{"team_id" => team_id,"category_id" => category_id,"user_id" => user_id}) do
-    counters = ProjectAssignments.user_assignment(team_id,category_id,user_id)
-    render(conn, "index.json", counters: counters)
+
+
+
+
+  # get user projects assignments  overview count
+  def user_project_assignment(conn, %{"team_id" => team_id,"category_id" => category_id,"user_id" => user_id}) do
+    assignment_overview = ProjectAssignments.user_assignment(team_id,category_id,user_id)
+    render(conn, "assignment_status_overview.json", assignment_overview: assignment_overview)
   end
-
-    # get all completed user projects assignments count
-    def user_completed_project_assignment(conn, %{"team_id" => team_id,"category_id" => category_id,"user_id" => user_id}) do
-      completed = ProjectAssignments.user_completed_assignment(team_id,category_id,user_id)
-      render(conn, "index.json", completed: completed)
-    end
-
-     # get all pending user projects assignments  count
-     def user_pending_project_assignment(conn, %{"team_id" => team_id,"category_id" => category_id,"user_id" => user_id}) do
-      pending = ProjectAssignments.user_pending_assignment(team_id,category_id,user_id)
-      render(conn, "index.json", pending: pending)
-    end
-
-
 
 
 

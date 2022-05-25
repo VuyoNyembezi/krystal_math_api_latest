@@ -179,67 +179,48 @@ defmodule KrystalMathApiWeb.Router do
     delete "/live_issue/delete", ProjectController, :delete_live_issue 
 
     ##### COUNTERS  ###########
-    get "/projects/count", ProjectController, :project_count
+    # get "/projects/count", ProjectController, :project_count
  
     get "/projects/count/category", ProjectController, :project_count_by_category
 
-    get "/projects/assigned/count/all", ProjectController, :assigned_project_count
-    get "/projects/not_assigned/count/all", ProjectController, :not_assigned_project_count
-    # project completion status
-    get "/projects/pending/count/all", ProjectController, :pending_project_count
-    get "/projects/completed/count/all", ProjectController, :completed_project_count
+    # All project Counters
+    get "/projects/count", ProjectController, :projects_counter
+
     # project status counters
-    get "/projects/count/not_started", ProjectController, :projects_not_started
-    get "/projects/count/planning", ProjectController, :projects_planning
-    get "/projects/count/under_investigation", ProjectController, :projects_under_investigation
-    get "/projects/count/on_hold", ProjectController, :projects_hold
-    get "/projects/count/in_progress", ProjectController, :projects_in_progress
-    get "/projects/count/dev_complete", ProjectController, :projects_dev_complete
-    get "/projects/count/qa", ProjectController, :projects_qa
-    get "/projects/count/deployed", ProjectController, :projects_deployed
+
+    get "/projects_status/count", ProjectController, :projects_status_counter
 
     # project status counters by category ( Operational, Strategic)
-    get "/projects/category/count/not_started", ProjectController, :projects_category_not_started
-    get "/projects/category/count/planning", ProjectController, :projects_category_planning
-    get "/projects/category/count/under_investigation", ProjectController, :projects_category_under_investigation
-    get "/projects/category/count/on_hold", ProjectController, :projects_category_hold
-    get "/projects/category/count/in_progress", ProjectController, :projects_category_in_progress
-    get "/projects/category/count/dev_complete", ProjectController, :projects_category_dev_complete
-    get "/projects/category/count/qa", ProjectController, :projects_category_qa
-    get "/projects/category/count/deployed", ProjectController, :projects_category_deployed
 
+
+    get "/projects/category/count", ProjectController, :projects_category_statuses
     #Team Project Counters 
-    get "/team/project/count/all", ProjectController, :all_team_projects_count
-    get "/team/project/count/complete", ProjectController, :team_completed_projects
-    get "/team/project/count/pending", ProjectController, :team_pending_projects
+    get "/team/project/count", ProjectController, :team_projects_count
 
     # by category Team Projects
-    get "/team/project/category/count/all", ProjectController, :all_team_projects_category_count
-    get "/team/project/category/count/complete", ProjectController, :team_completed_category_projects
-    get "/team/project/category/count/pending", ProjectController, :team_pending_category_projects
 
-    # team project status counters by category (, Operational, Strategic)
-    get "/team_projects/category/count/not_started", ProjectController, :team_projects_category_not_started
-    get "/team_projects/category/count/planning", ProjectController, :team_projects_category_planning
-    get "/team_projects/category/count/under_investigation", ProjectController, :team_projects_category_under_investigation
-    get "/team_projects/category/count/on_hold", ProjectController, :team_projects_category_hold
-    get "/team_projects/category/count/in_progress", ProjectController, :team_projects_category_in_progress
-    get "/team_projects/category/count/dev_complete", ProjectController, :team_projects_category_dev_complete
-    get "/team_projects/category/count/qa", ProjectController, :team_projects_category_qa
-    get "/team_projects/category/count/deployed", ProjectController, :team_projects_category_deployed
+    get "/team/project/category/count", ProjectController, :team_category_projects_count
+    
+    # team project statuses counters by category (, Operational, Strategic)
+    get "/team_projects/category/count", ProjectController, :team_projects_category_statuses
+
     # team project status counters overview
-    get "/team_projects/overview/count/not_started", ProjectController, :team_projects_overview_not_started
-    get "/team_projects/overview/count/planning", ProjectController, :team_projects_overview_planning
-    get "/team_projects/overview/count/under_investigation", ProjectController, :team_projects_overview_under_investigation
-    get "/team_projects/overview/count/on_hold", ProjectController, :team_projects_overview_hold
-    get "/team_projects/overview/count/in_progress", ProjectController, :team_projects_overview_in_progress
-    get "/team_projects/overview/count/dev_complete", ProjectController, :team_projects_overview_dev_complete
-    get "/team_projects/overview/count/qa", ProjectController, :team_projects_overview_qa
-    get "/team_projects/overview/count/deployed", ProjectController, :team_projects_overview_deployed
+    get "/team_projects/overview/count", ProjectController, :team_projects_statuses
+
 
     # Live Issues Counters
     get "/live_issues/active/count", ProjectController, :active_live_issues_counter
-    get "/live_issues/team/active/count", ProjectController, :active_team_live_issues_counter
+
+
+    # Overall Cunter
+    get "/live_issues/count/overview", ProjectController, :live_issues_counter
+    get "/live_issues/count/statuses", ProjectController, :live_issue_status_counter
+
+
+# TEAM
+   
+    get "/live_issues/team/count/overview", ProjectController, :team_live_issues_counter
+    get "/live_issues/team/count/statuses", ProjectController, :team_live_statuses
 
 ############## Project Assignments ##########################
     get "/project_assignment/all", AssignmentController, :get_project_assignments
@@ -261,11 +242,7 @@ defmodule KrystalMathApiWeb.Router do
     delete "/project_assignment/delete", AssignmentController, :un_assign_member
 
   ####### Counters #####
-    get "/project_assignments/user/count/all", AssignmentController, :user_project_assignment
-    get "/project_assignments/user/count/completed", AssignmentController, :user_completed_project_assignment
-    get "/project_assignments/user/count/pending", AssignmentController, :user_pending_project_assignment
-
-
+    get "/project_assignments/user/count", AssignmentController, :user_project_assignment
 ######### Task Controller #########
 
     get "/tasks/all", TaskController, :get_tasks
@@ -299,32 +276,14 @@ defmodule KrystalMathApiWeb.Router do
 
       #### counters ######
       # User/Dev #
-      get "/task/user/count/all", TaskController, :user_all_tasks
-      get "/task/user/count/completed", TaskController, :user_completed_tasks
-      get "/task/user/count/pending", TaskController, :user_not_completed_tasks
-      get "/task/user/count/over_due", TaskController, :user_tasks_overdue
+      get "/task/user/count", TaskController, :user_tasks_counter
         # user task status counter
-        get "/user/tasks_status/count/not_started", TaskController, :user_tasks_not_started
-        get "/user/tasks_status/count/on_hold", TaskController, :user_tasks_on_hold
-        get "/user/tasks_status/count/in_progress", TaskController, :user_tasks_in_progress
-        get "/user/tasks_status/count/testing", TaskController, :user_tasks_testing
-        get "/user/tasks_status/count/completed", TaskController, :user_tasks_completed
-
+      get "/user/tasks_status", TaskController, :user_tasks_status_counter
 
       # Team #
-      get "/task/team/count/all", TaskController, :team_all_tasks
-      get "/task/team/count/completed", TaskController, :team_completed_tasks
-      get "/task/team/count/pending", TaskController, :team_not_completed_tasks
-      get "/task/team/count/over_due", TaskController, :team_tasks_overdue
-
       get "/task/team/count", TaskController, :get_team_tasks_counter
 
-        # team task status counter
-        get "/team/tasks_status/count/not_started", TaskController, :team_tasks_not_started
-        get "/team/tasks_status/count/on_hold", TaskController, :team_tasks_on_hold
-        get "/team/tasks_status/count/in_progress", TaskController, :team_tasks_in_progress
-        get "/team/tasks_status/count/testing", TaskController, :team_tasks_testing
-        get "/team/tasks_status/count/completed", TaskController, :team_tasks_completed
+      # team task status counter
    
         get "/team/task_status", TaskController, :get_team_tasks_status_counter
   end
