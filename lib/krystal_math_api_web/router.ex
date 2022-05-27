@@ -192,7 +192,6 @@ defmodule KrystalMathApiWeb.Router do
 
     # project status counters by category ( Operational, Strategic)
 
-
     get "/projects/category/count", ProjectController, :projects_category_statuses
     #Team Project Counters 
     get "/team/project/count", ProjectController, :team_projects_count
@@ -210,12 +209,9 @@ defmodule KrystalMathApiWeb.Router do
 
     # Live Issues Counters
     get "/live_issues/active/count", ProjectController, :active_live_issues_counter
-
-
-    # Overall Cunter
+    # Overall Counter
     get "/live_issues/count/overview", ProjectController, :live_issues_counter
     get "/live_issues/count/statuses", ProjectController, :live_issue_status_counter
-
 
 # TEAM
    
@@ -231,6 +227,9 @@ defmodule KrystalMathApiWeb.Router do
     get "/project_assignment/details", AssignmentController, :get_project_assigned_details
     get "/project_assignment/dev", AssignmentController, :get_project_dev_assigned
     get "/project_assignment/dev/project_type", AssignmentController, :project_user_assigned
+
+
+    get "/project_assignment/dev/all", AssignmentController, :overview_project_dev_assigned
     
     #search
     get "/project_assignment/team/search", AssignmentController, :team_project_assignments_search
@@ -269,6 +268,8 @@ defmodule KrystalMathApiWeb.Router do
 
     #update (deactivate task, activate task, update)
     put "/task/update", TaskController, :update_task
+    put "/task/dev/update", TaskController, :dev_update_task
+
     put "/task/activate", TaskController, :activate_task
     put "/task/deactivate", TaskController, :de_activate_task
 

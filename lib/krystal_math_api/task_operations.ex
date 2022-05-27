@@ -163,6 +163,16 @@ alias KrystalMathApi.Operations.Task
         |> Task.changeset(attrs)
         |> Repo.update()
     end
+      
+    @doc """
+     Dev update Task Record 
+    """
+    def dev_update_task_values(%Task{} = task, attrs) do
+      task
+      |> Task.dev_changeset(attrs)
+      |> Repo.update()
+  end
+
 
     @doc """
         deactivate Task Record 
@@ -353,7 +363,6 @@ end
     query = from(t in Task,select: count(t.id), where: t.team_id == ^team_id and t.task_status_id == ^status_key )
     Repo.one(query)
   end
-
 
   ####@@@@ LATEST @@@@############
     # teast tasks statuses

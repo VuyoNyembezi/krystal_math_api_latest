@@ -69,7 +69,15 @@ defmodule KrystalMathApiWeb.AssignmentController do
         projects_assignment = ProjectAssignments.project_type_dev_assigned(team_id,project_type, user_id)
         render(conn, "assignment_record.json",  projects_assignment: projects_assignment  )
       end
-  
+      
+      ###@@@ LATEST @@@#####
+
+      # map request for Dev assignments Projects
+      def overview_project_dev_assigned(conn, %{"team_id"=> team_id, "id" => user_id}) do
+        assignment = ProjectAssignments.dev_project_assignments(team_id, user_id)
+        render(conn, "project_assignment.json",  assignment: assignment  )
+      end
+      
   # # Create Assignment
   def assign_project(conn, %{"projects_assignment" => project_assignment_params}) do
     with {:ok, %ProjectAssignment{} = projects_assignment} <- ProjectAssignments.create_project_assignment(project_assignment_params) do

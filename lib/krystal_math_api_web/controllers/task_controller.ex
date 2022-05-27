@@ -136,6 +136,15 @@ end
       render(conn, "show.json", task: task)
     end
   end
+    @doc """
+  update Dev Task record
+  """
+  def dev_update_task(conn, %{"id" => id, "task" => task_params}) do
+    task = TaskOperations.get_task!(id)
+    with {:ok, %Task{} = task} <- TaskOperations.dev_update_task_values(task, task_params) do
+      render(conn, "show.json", task: task)
+    end
+  end
 
    @doc """
     Activate Task Status record

@@ -50,6 +50,29 @@ defmodule KrystalMathApiWeb.AssignmentView do
         updated_at: assignment.updated_at
       }
     end
+
+
+    def render("project_assignment.json", %{assignment: assignment}) do
+      %{
+     
+        bet_projects: render_many(assignment.bet_projects, AssignmentView, "full_assign_details.json"),
+        country_projects: render_many(assignment.country_projects, AssignmentView, "full_assign_details.json"),
+        customer_journey_projects: render_many(assignment.customer_journey_projects, AssignmentView, "full_assign_details.json"),
+        integrations_projects: render_many(assignment.integrations_projects, AssignmentView, "full_assign_details.json"),
+        payment_method_projects: render_many(assignment.payment_method_projects, AssignmentView, "full_assign_details.json"),
+        digital_marketing_projects: render_many(assignment.digital_marketing_projects, AssignmentView, "full_assign_details.json"),
+        bet_project_partners_projects: render_many(assignment.bet_project_partners_projects, AssignmentView, "full_assign_details.json")
+      }
+    end
+
+
+
+
+
+
+
+
+
     
 # Team json view 
     def render("index.json", %{teams: teams}) do

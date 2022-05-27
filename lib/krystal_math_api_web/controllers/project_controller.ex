@@ -126,8 +126,6 @@ def team_strategic_project_types(conn, %{"team_id" => team_id, "project_type" =>
     render(conn,"index.json", projects: projects)
 end
 
-
-
 # Create New Record
 
 def create_new_project(conn, %{"project" => project_params}) do
@@ -224,8 +222,6 @@ def update_live_issue_status(conn, %{"id" => id, "live_issue"=> live_issue_param
   end
 end
 
-
-
     # Delete Live Issues
     def delete_live_issue(conn, %{"id" => id}) do
       live_issue = Projects.get_live_issue!(id)
@@ -295,8 +291,6 @@ end
   end
  
 
-
-
 ############# LIVE ISSUES COUNTER    ################
 
 def active_live_issues_counter(conn, _params) do
@@ -315,8 +309,6 @@ def live_issue_status_counter(conn, _params) do
   project_statsuses = Projects.live_issue_statuses()
   render(conn, "project_statuses.json", project_statsuses: project_statsuses)
 end
-
-
 
 # TEAM COUNTERS
 

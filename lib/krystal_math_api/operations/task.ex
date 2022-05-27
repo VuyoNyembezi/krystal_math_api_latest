@@ -43,6 +43,17 @@ defmodule KrystalMathApi.Operations.Task do
     |> unique_constraint(:name)
   end
 
+  def dev_changeset(task, attrs) do
+    task
+    |> cast(attrs, [
+      :task_status_id,
+      :active
+    ])
+    |> validate_required([
+      :task_status_id
+    ])
+  end
+
   def de_activation_changeset(task, attrs) do
     task
     |> cast(attrs, [
