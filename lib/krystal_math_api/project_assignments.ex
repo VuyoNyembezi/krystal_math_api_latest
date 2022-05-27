@@ -2,7 +2,7 @@ defmodule KrystalMathApi.ProjectAssignments do
     import Ecto.Query, warn: false
      alias KrystalMathApi.Repo
      alias KrystalMathApi.Projects.ProjectAssignment
-     
+     alias KrystalMathApi.Projects.CategoriesAndImportance.ProjectType
  
      def active_users do
       query = from(u in "users",
@@ -15,6 +15,12 @@ defmodule KrystalMathApi.ProjectAssignments do
       where: u.is_active == true)
       Repo.all(query)
     end
+
+    def get_project_types(project_type)  do
+      query = from(pt in ProjectType,select: pt.id, where: pt.name == ^project_type)
+      Repo.one(query)
+    end
+
 
 
 ####### SEARCH METHODS #################
@@ -98,6 +104,31 @@ defmodule KrystalMathApi.ProjectAssignments do
     Repo.all(query)
     |> Repo.preload([:project, :user, :project_category_type, :project_type, :user_status, :team ])
   end
+  # Map Fucntion 
+def team_project_assignments(team_id) do
+project_types =%{
+  bet_project: get_project_types("BET Projects"),
+  country_project: get_project_types("Country"),
+  customer_journey: get_project_types("Customer Journey"),
+  integrations: get_project_types("Integrations"),
+  payment_methods: get_project_types("Payment Methods /Gateways"),
+  digital_marketing: get_project_types("Digital Marketing"),
+  bet_project_partners: get_project_types("BETSoftware Partners"),
+}
+
+  team_assignment = %{
+    bet_projects: get_project_assigned_type(team_id , project_types.bet_project),
+    country_projects: get_project_assigned_type(team_id , project_types.country_project),
+    customer_journey_projects: get_project_assigned_type(team_id , project_types.customer_journey),
+    integrations_projects: get_project_assigned_type(team_id , project_types.integrations),
+    payment_method_projects: get_project_assigned_type(team_id , project_types.payment_methods),
+    digital_marketing_projects: get_project_assigned_type(team_id , project_types.digital_marketing),
+    bet_project_partners_projects: get_project_assigned_type(team_id , project_types.bet_project_partners)
+  }
+
+  team_assignment
+
+end
 
   ### DEV/User  Assigned ###
 
@@ -118,6 +149,37 @@ defmodule KrystalMathApi.ProjectAssignments do
     Repo.all(query)
     |> Repo.preload([:project, :user, :project_category_type, :project_type, :user_status, :team ])
   end
+# Map Fucntion 
+def dev_project_assignments(team_id, user_id) do
+  project_types =%{
+    bet_project: get_project_types("BET Projects"),
+    country_project: get_project_types("Country"),
+    customer_journey: get_project_types("Customer Journey"),
+    integrations: get_project_types("Integrations"),
+    payment_methods: get_project_types("Payment Methods /Gateways"),
+    digital_marketing: get_project_types("Digital Marketing"),
+    bet_project_partners: get_project_types("BETSoftware Partners"),
+  }
+  
+
+        [dev_assignment] = [%{
+          bet_projects: project_type_dev_assigned(team_id , project_types.bet_project, user_id),
+          country_projects: project_type_dev_assigned(team_id , project_types.country_project, user_id),
+          customer_journey_projects: project_type_dev_assigned(team_id , project_types.customer_journey, user_id),
+          integrations_projects: project_type_dev_assigned(team_id , project_types.integrations, user_id),
+          payment_method_projects: project_type_dev_assigned(team_id , project_types.payment_methods, user_id),
+          digital_marketing_projects: project_type_dev_assigned(team_id , project_types.digital_marketing, user_id),
+          bet_project_partners_projects: project_type_dev_assigned(team_id , project_types.bet_project_partners, user_id)
+        }]
+
+        dev_assignment
+end
+
+
+
+
+
+
 
 
 
