@@ -224,7 +224,7 @@ defmodule KrystalMathApiWeb.AdminController do
 
         def update_project_status(conn, %{"id" => id, "status" => project_status_params}) do
             project_status = AdminOperations.get_project_status!(id)
-            with {:ok, %Status{} = project_status} <- AdminOperations.update_project_status(project_status, project_status_params) do
+            with {:ok, %Status{} = project_status} <- AdminOperations.update_project_status_value(project_status, project_status_params) do
             render(conn, "show.json", project_status: project_status)
             end
         end
@@ -324,7 +324,7 @@ defmodule KrystalMathApiWeb.AdminController do
     # Update Project Category  
     def update_project_category_type(conn, %{"id" => id, "project_category" => project_category_params}) do
         project_category_type = AdminOperations.get_project_category_type!(id)
-        with {:ok, %ProjectCategoryType{} = project_category_type} <- AdminOperations.update_project_type(project_category_type, project_category_params) do
+        with {:ok, %ProjectCategoryType{} = project_category_type} <- AdminOperations.update_project_category_type(project_category_type, project_category_params) do
         render(conn, "show.json", project_category_type: project_category_type)
         end
     end

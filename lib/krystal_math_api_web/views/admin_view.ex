@@ -113,6 +113,13 @@ def render("index.json", %{task_statuses: task_statuses}) do
         level: project_status.level
       }
     end
+    def render("show.json", %{project_status: project_status}) do
+      %{data: render_one(project_status, ProjectStatusView, "project_status.json")}
+    end
+
+
+
+
     def render("project_status.json", %{project_status: project_status}) do
       %{data: render_one(project_status, ProjectStatusView, "project_status.json")}
     end

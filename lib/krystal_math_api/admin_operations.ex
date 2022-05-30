@@ -354,7 +354,7 @@ defmodule KrystalMathApi.AdminOperations do
   update project type  record
   """
 
-  def update_project_status(%Status{} = project_status, attrs) do
+  def update_project_status_value(%Status{} = project_status, attrs) do
     project_status
     |> Status.changeset(attrs)
     |> Repo.update()
