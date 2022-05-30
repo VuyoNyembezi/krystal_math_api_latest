@@ -150,23 +150,87 @@ def live_issuses_search(conn, %{"search" => search_term}) do
   live_issues = Projects.all_live_issues_search(search_term)
   render(conn, "index.json", live_issues: live_issues )
 end
+# active 
+# search live issues
+def active_live_issuses_search(conn, %{"search" => search_term}) do
+  live_issues = Projects.all_active_live_issues_search(search_term)
+  render(conn, "index.json", live_issues: live_issues )
+end
+# not active 
+# search live issues
+def not_active_live_issuses_search(conn, %{"search" => search_term}) do
+  live_issues = Projects.all_not_active_live_issues_search(search_term)
+  render(conn, "index.json", live_issues: live_issues )
+end
+# Completed
+# search live issues
+def completed_live_issuses_search(conn, %{"search" => search_term}) do
+  live_issues = Projects.all_completed_active_live_issues_search(search_term)
+  render(conn, "index.json", live_issues: live_issues )
+end
+
+
+
 # search team live issues
 def team_live_issuses_search(conn, %{"team_id" => team_id,"search" => search_term}) do
   live_issues = Projects.all_team_live_issues_search(team_id,search_term)
   render(conn, "index.json", live_issues: live_issues )
 end
+# active team projects
+def active_team_live_issuses_search(conn, %{"team_id" => team_id,"search" => search_term}) do
+  live_issues = Projects.active_team_live_issues_search(team_id,search_term)
+  render(conn, "index.json", live_issues: live_issues )
+end
+# not active projects
+def not_active_team_live_issuses_search(conn, %{"team_id" => team_id,"search" => search_term}) do
+  live_issues = Projects.not_active_team_live_issues_search(team_id,search_term)
+  render(conn, "index.json", live_issues: live_issues )
+end
+# completed
+def completed_team_live_issuses_search(conn, %{"team_id" => team_id,"search" => search_term}) do
+  live_issues = Projects.completed_team_live_issues_search(team_id,search_term)
+  render(conn, "index.json", live_issues: live_issues )
+end
+
+
+
+
+
+
+
+
 
 # Get all  live issue projects
 def get_live_issuses(conn, _params) do
 live_issues = Projects.all_live_issues()
 render(conn, "index.json", live_issues: live_issues )
 end
-# Get all team live issue by 
+
+# Get all active live issue projects
+def get_active_live_issuses(conn, _params) do
+  live_issues = Projects.all_active_live_issues()
+  render(conn, "index.json", live_issues: live_issues )
+  end
+  # Get all not active live issue projects
+def get_not_active_live_issuses(conn, _params) do
+  live_issues = Projects.all_not_active_live_issues()
+  render(conn, "index.json", live_issues: live_issues )
+  end
+
+  # Get all  live issue projects
+def get_completed_live_issuses(conn, _params) do
+  live_issues = Projects.all_completed_live_issues()
+  render(conn, "index.json", live_issues: live_issues )
+  end
+
+
+
+# Get all team live issue by  statuse type
 def get_live_issues_status(conn, %{"status_type" => status_type}) do
   live_issues = Projects.all_live_issues_status(status_type)
   render(conn, "index.json", live_issues: live_issues )
 end
-
+# TEAM
 # Get all team live issue projects
 def get_all_team_live_issuses(conn, %{"team_id" => team_id}) do
   live_issues = Projects.all_active_team_live_issues(team_id)

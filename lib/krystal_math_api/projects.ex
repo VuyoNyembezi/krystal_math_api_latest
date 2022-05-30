@@ -191,14 +191,67 @@ defmodule KrystalMathApi.Projects do
           where: like(p.name, ^search_name)))
           |> Repo.preload([:team, :user, :project_status, :priority_type])
     end
-        # search for projects
+
+    # search for all  active projects
+        def all_active_live_issues_search(search_term) do
+          search_name = "%#{search_term}%"
+              Repo.all(from(p in LiveIssue,
+              where: like(p.name, ^search_name) and p.is_active == true))
+              |> Repo.preload([:team, :user, :project_status, :priority_type])
+        end
+
+    # search for all  not active projects
+        def all_not_active_live_issues_search(search_term) do
+          completion_key = 8
+            search_name = "%#{search_term}%"
+                Repo.all(from(p in LiveIssue,
+                where: like(p.name, ^search_name) and p.is_active == false and p.project_status_id != ^completion_key))
+                |> Repo.preload([:team, :user, :project_status, :priority_type])
+        end
+
+    # search for all completed projects
+        def all_completed_active_live_issues_search(search_term) do
+          completion_key = 8
+            search_name = "%#{search_term}%"
+              Repo.all(from(p in LiveIssue,
+              where: like(p.name, ^search_name) and p.is_active == false and p.project_status_id == ^completion_key))
+            |> Repo.preload([:team, :user, :project_status, :priority_type])
+          end
+
+
+        # Team Search
+        
+        
+  # search for projects
         def all_team_live_issues_search(team_id, search_term) do
           search_name = "%#{search_term}%"
               Repo.all(from(p in LiveIssue,
               where: like(p.name, ^search_name) and p.team_id == ^team_id) )
               |> Repo.preload([:team, :user, :project_status, :priority_type])
         end
-
+  # active search for projects
+  def active_team_live_issues_search(team_id, search_term) do
+    search_name = "%#{search_term}%"
+        Repo.all(from(p in LiveIssue,
+        where: like(p.name, ^search_name) and p.team_id == ^team_id and p.is_active == true) )
+        |> Repo.preload([:team, :user, :project_status, :priority_type])
+  end
+    # not active search for projects
+    def not_active_team_live_issues_search(team_id, search_term) do
+      completion_key = 8
+      search_name = "%#{search_term}%"
+          Repo.all(from(p in LiveIssue,
+          where: like(p.name, ^search_name) and p.team_id == ^team_id and p.is_active == false and p.project_status_id != ^completion_key) )
+          |> Repo.preload([:team, :user, :project_status, :priority_type])
+    end
+      # completed search for projects
+      def completed_team_live_issues_search(team_id, search_term) do
+        completion_key = 8
+        search_name = "%#{search_term}%"
+            Repo.all(from(p in LiveIssue,
+            where: like(p.name, ^search_name) and p.team_id == ^team_id and p.is_active == false and p.project_status_id == ^completion_key) )
+            |> Repo.preload([:team, :user, :project_status, :priority_type])
+      end
 
 
     # get live issue by Id
@@ -221,7 +274,35 @@ def all_live_issues_status(status_type) do
   |> Repo.preload([:team, :user, :project_status, :priority_type])
 end
 
+# Get all active  live issues 
+def all_active_live_issues do
+  all_projects = from(p in LiveIssue, order_by: [desc: p.priority_type_id],where:  p.is_active == true)
+  Repo.all(all_projects)
+  |> Repo.preload([:team, :user, :project_status, :priority_type])
+end
+# Get all not active  live issues 
+def all_not_active_live_issues do
+  completion_key = 8
+  all_projects = from(p in LiveIssue, order_by: [desc: p.priority_type_id],where: p.is_active == false and p.project_status_id != ^completion_key)
+  Repo.all(all_projects)
+  |> Repo.preload([:team, :user, :project_status, :priority_type])
+end
 
+# Get all comleted active  live issues 
+def all_completed_live_issues do
+  completion_key = 8
+  all_projects = from(p in LiveIssue, order_by: [desc: p.priority_type_id],where: p.is_active == false and p.project_status_id == ^completion_key )
+  Repo.all(all_projects)
+  |> Repo.preload([:team, :user, :project_status, :priority_type])
+end
+
+
+
+
+
+
+
+# Team
 # Get all team  live issues 
 def all_team_live_issues(team_id) do
   all_projects = from(p in LiveIssue, order_by: [desc: p.priority_type_id],where: p.team_id == ^team_id)

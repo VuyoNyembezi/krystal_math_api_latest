@@ -160,11 +160,23 @@ defmodule KrystalMathApiWeb.Router do
 
       # search
       get "/live_issues/all/search", ProjectController, :live_issuses_search
-      get "/live_issues/team/search", ProjectController, :team_live_issuses_search
+      get "/live_issues/active/search", ProjectController, :active_live_issuses_search
+      get "/live_issues/not_active/search", ProjectController, :not_active_live_issuses_search
+      get "/live_issues/completed/search", ProjectController, :completed_live_issuses_search
 
       get "/live_issues/all", ProjectController, :get_live_issuses
       get "/live_issues/status/all", ProjectController, :get_live_issues_status
+      get "/live_issues/active/all", ProjectController, :get_active_live_issuses
+      get "/live_issues/not_active/all", ProjectController, :get_not_active_live_issuses
+      get "/live_issues/completed/all", ProjectController, :get_completed_live_issuses
+
       # team
+      # search
+      get "/live_issues/team/search", ProjectController, :team_live_issuses_search
+      get "/live_issues/team/active/search", ProjectController, :active_team_live_issuses_search
+      get "/live_issues/team/not_active/search", ProjectController, :not_active_team_live_issuses_search
+      get "/live_issues/team/completed/search", ProjectController, :completed_team_live_issuses_search
+
       get "/team/live_issues/all", ProjectController, :get_all_team_live_issuses
       get "/team/live_issues/status/all", ProjectController, :get_all_team_live_issuses_status
       get "/team/live_issues/active/all", ProjectController, :get_active_team_live_issuses
