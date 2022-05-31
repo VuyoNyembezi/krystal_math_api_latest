@@ -441,7 +441,6 @@ iex> projects_counter(1)
     Repo.one(status)
   end
   def projects_planning_status do
-  
     status_key = 2
     status = from(p in Project,
     select:  count(p.project_status_id), where:  p.project_status_id == ^status_key )
@@ -891,7 +890,6 @@ iex> live_issue_statuses(1)
       dev_complete: live_issue_dev_complete_status() ,
       qa: live_issue_qa_status(),
       deployed: live_issue_deployed_status()
-
     }
     live_issue_statuses_count
   end
