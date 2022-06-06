@@ -124,13 +124,27 @@ defmodule KrystalMathApiWeb.Router do
 
     # Search
     get "/projects/search", ProjectController, :all_projects_search
-    get "/projects/category/search", ProjectController, :projects_category_search
-    get "/projects/project_type/search", ProjectController, :projects_type_search
+    get "/projects/operational/search/all", ProjectController, :projects_operational_category_search
+    get "/projects/strategic/search/all", ProjectController, :projects_strategic_category_search
+  
+# New Searchh Routes 
+    get "/projects/operational/search", ProjectController, :search_operational_projects
+    get "/projects/strategic/search", ProjectController, :search_strategic_projects
     # team search
     get "/projects/team/all/search", ProjectController, :all_team_projects_search
     get "/projects/team/category/search", ProjectController, :team_projects_category_search
-    get "/projects/team/project_type/search", ProjectController, :team_projects_type_search
+    # New Routes
+    get "/projects/team/operational/search", ProjectController, :team_search_operational_projects
+    get "/projects/team/strategic/search", ProjectController, :team_search_strategic_projects
 
+
+
+    get "/projects/team/project_type/search", ProjectController, :team_projects_type_search
+    get "/projects/team/operational_types/search", ProjectController, :team_search_operational_projects_project_type
+    get "/projects/team/strategic_types/search", ProjectController, :team_search_strategic_projects_project_type
+  
+  
+    # All Projects (Operational, Strategic)
     get "/projects/operational/all", ProjectController, :all_operational_projects
     get "/projects/strategic/all", ProjectController, :all_strategic_projects
    
@@ -138,18 +152,19 @@ defmodule KrystalMathApiWeb.Router do
     get "/projects/strategic/un_assigned/all", ProjectController, :all_un_assigned_strategic_projects
 
     # Get Projects Using Project Types
-    get "/projects/operational/project_types/all", ProjectController, :all_operational_projects_types
-    get "/projects/strategic/project_types/all", ProjectController, :all_strategic_projects_types
-    
+   
+        # New Route Map
+        get "/projects/operational", ProjectController, :get_operational_projects_types
+        get "/projects/strategic", ProjectController, :get_strategic_projects_types
 
     # Team Routes 
     get "/team/projects/all", ProjectController, :team_projects
     get "/team/projects/category_type/all", ProjectController, :team_projects_by_category
-    get "/team/projects/project_type/all", ProjectController, :team_projects_type
+    get "/team/projects", ProjectController, :team_projects_type
     get "/team/projects/category_and_project_type/all", ProjectController, :team_projects_by_type_and_category
       
-    get "/team/projects/project_type/operational/all", ProjectController, :team_operational_project_types
-    get "/team/projects/project_type/strategic/all", ProjectController, :team_strategic_project_types
+    get "/team/projects/operational", ProjectController, :team_operational_project_types
+    get "/team/projects/strategic", ProjectController, :team_strategic_project_types
 
       
     # Create Project
@@ -236,17 +251,27 @@ defmodule KrystalMathApiWeb.Router do
     get "/project_assignment/project_type", AssignmentController, :get_project_assignments_project_type
     get "/project_assignment/member", AssignmentController, :get_project_assigned_member
     get "/project_assignment/team", AssignmentController, :get_project_assigned_team
+
+# New Map Request endpoint 
+get "/project_assignment/team/all", AssignmentController, :overview_project_team_assigned
+get "/project_assignment/over_due/team/all", AssignmentController, :overview_over_due_project_team_assigned
+
+    
+    get "/project_assignment/over_due/team", AssignmentController, :get_over_due_project_assigned_team
     get "/project_assignment/details", AssignmentController, :get_project_assigned_details
     get "/project_assignment/dev", AssignmentController, :get_project_dev_assigned
+    get "/project_assignment/over_due/dev", AssignmentController, :get_over_due_project_dev_assigned
+
     get "/project_assignment/dev/project_type", AssignmentController, :project_user_assigned
+    get "/project_assignment/dev/over_due/project_type", AssignmentController, :over_due_project_user_assigned
 
-
+    # New Map Request endpoint
     get "/project_assignment/dev/all", AssignmentController, :overview_project_dev_assigned
+    get "/project_assignment/over_due/dev/all", AssignmentController, :overview_over_due_project_dev_assigned
     
     #search
     get "/project_assignment/team/search", AssignmentController, :team_project_assignments_search
     get "/project_assignment/dev/search", AssignmentController, :user_project_assignments_search
-
 
     post "/project_assignment/assign", AssignmentController, :assign_project
     put "/project_assignment/update", AssignmentController, :update_assignment_details

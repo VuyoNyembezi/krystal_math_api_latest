@@ -83,11 +83,18 @@ defmodule KrystalMathApi.ProjectAssignments do
   gets all projects assignements to a Team
   """
   def all_projects_assignment_to_team(team_id) do
-    query = from(a in ProjectAssignment, where: a.team_id == ^team_id)
+    query = from(a in ProjectAssignment, where: a.due_date >= ^DateTime.utc_now and a.team_id == ^team_id)
     Repo.all(query)
     |> Repo.preload([:project, :user, :project_category_type, :project_type, :user_status, :team ])
   end
-
+   @doc """
+  gets all over due projects assignements to a Team
+  """
+  def all_over_due_projects_assignment_to_team(team_id) do
+    query = from(a in ProjectAssignment, where: a.due_date <= ^DateTime.utc_now and a.team_id == ^team_id)
+    Repo.all(query)
+    |> Repo.preload([:project, :user, :project_category_type, :project_type, :user_status, :team ])
+  end
    @doc """
   gets all assigned assigned members on the project
   """
@@ -100,11 +107,19 @@ defmodule KrystalMathApi.ProjectAssignments do
   gets all assigned assigned record by project, type
   """
   def get_project_assigned_type(team_id, project_type) do
-    query = from(a in ProjectAssignment, where: a.team_id == ^team_id and a.project_type_id == ^project_type and a.user_id != 2)
+    query = from(a in ProjectAssignment, where: a.due_date >= ^DateTime.utc_now and a.team_id == ^team_id and a.project_type_id == ^project_type and a.user_id != 2)
     Repo.all(query)
     |> Repo.preload([:project, :user, :project_category_type, :project_type, :user_status, :team ])
   end
-  # Map Fucntion 
+       @doc """
+  gets all overdue team record by project, type
+  """
+  def get_over_due_project_assigned_type(team_id, project_type) do
+    query = from(a in ProjectAssignment, where: a.due_date <= ^DateTime.utc_now and a.team_id == ^team_id and a.project_type_id == ^project_type and a.user_id != 2)
+    Repo.all(query)
+    |> Repo.preload([:project, :user, :project_category_type, :project_type, :user_status, :team ])
+  end
+  # Map Fucntion  (Open Projects)
 def team_project_assignments(team_id) do
 project_types =%{
   bet_project: get_project_types("BET Projects"),
@@ -115,41 +130,79 @@ project_types =%{
   digital_marketing: get_project_types("Digital Marketing"),
   bet_project_partners: get_project_types("BETSoftware Partners"),
 }
-
-  team_assignment = %{
-    bet_projects: get_project_assigned_type(team_id , project_types.bet_project),
+  [team_assignment] =  [%{
+   bet_projects: get_project_assigned_type(team_id , project_types.bet_project),
     country_projects: get_project_assigned_type(team_id , project_types.country_project),
     customer_journey_projects: get_project_assigned_type(team_id , project_types.customer_journey),
     integrations_projects: get_project_assigned_type(team_id , project_types.integrations),
     payment_method_projects: get_project_assigned_type(team_id , project_types.payment_methods),
     digital_marketing_projects: get_project_assigned_type(team_id , project_types.digital_marketing),
     bet_project_partners_projects: get_project_assigned_type(team_id , project_types.bet_project_partners)
-  }
+  }]
 
   team_assignment
-
 end
+  # Map Fucntion 
+  def team_over_due_project_assignments(team_id) do
+    project_types =%{
+      bet_project: get_project_types("BET Projects"),
+      country_project: get_project_types("Country"),
+      customer_journey: get_project_types("Customer Journey"),
+      integrations: get_project_types("Integrations"),
+      payment_methods: get_project_types("Payment Methods /Gateways"),
+      digital_marketing: get_project_types("Digital Marketing"),
+      bet_project_partners: get_project_types("BETSoftware Partners"),
+    }
+    
+      [team_assignment] =  [%{
+       bet_projects: get_over_due_project_assigned_type(team_id , project_types.bet_project),
+        country_projects: get_over_due_project_assigned_type(team_id , project_types.country_project),
+        customer_journey_projects: get_over_due_project_assigned_type(team_id , project_types.customer_journey),
+        integrations_projects: get_over_due_project_assigned_type(team_id , project_types.integrations),
+        payment_method_projects: get_over_due_project_assigned_type(team_id , project_types.payment_methods),
+        digital_marketing_projects: get_over_due_project_assigned_type(team_id , project_types.digital_marketing),
+        bet_project_partners_projects: get_over_due_project_assigned_type(team_id , project_types.bet_project_partners)
+      }]
+    
+      team_assignment
+    
+    end
 
   ### DEV/User  Assigned ###
 
   @doc """ 
   get projects assigned to the user
   """
-  def get_project_dev_assigned(team_id, user_id) do
-    query = from(a in ProjectAssignment, where: a.team_id == ^team_id  and a.user_id == ^user_id)
+  def get_dev_assigned_projects(team_id, user_id) do
+    query = from(a in ProjectAssignment, where: a.due_date >= ^DateTime.utc_now and  a.team_id == ^team_id  and a.user_id == ^user_id)
     Repo.all(query)
     |> Repo.preload([:project, :user, :project_category_type, :project_type, :user_status, :team ])
   end
-
+  @doc """ 
+  get over due projects assigned to the user
+  """
+  def get_over_due_dev_assigned_projects(team_id, user_id) do
+    query = from(a in ProjectAssignment, where: a.due_date <= ^DateTime.utc_now and  a.team_id == ^team_id  and a.user_id == ^user_id)
+    Repo.all(query)
+    |> Repo.preload([:project, :user, :project_category_type, :project_type, :user_status, :team ])
+  end
    @doc """ 
   get projects assigned to the user by project Type 
   """
   def project_type_dev_assigned(team_id , project_type, user_id) do
-    query = from(a in ProjectAssignment, where: a.team_id == ^team_id  and a.project_type_id == ^project_type and a.user_id == ^user_id)
+    query = from(a in ProjectAssignment, where: a.due_date >= ^DateTime.utc_now and a.team_id == ^team_id  and a.project_type_id == ^project_type and a.user_id == ^user_id)
     Repo.all(query)
     |> Repo.preload([:project, :user, :project_category_type, :project_type, :user_status, :team ])
   end
-# Map Fucntion 
+     @doc """ 
+  get all overdue projects assigned to the user by project Type 
+  """
+  def over_due_project_type_dev_assigned(team_id , project_type, user_id) do
+    query = from(a in ProjectAssignment, where: a.due_date <= ^DateTime.utc_now and a.team_id == ^team_id  and a.project_type_id == ^project_type and a.user_id == ^user_id)
+    Repo.all(query)
+    |> Repo.preload([:project, :user, :project_category_type, :project_type, :user_status, :team ])
+  end
+# Map Fucntion Open Projects Assign
 def dev_project_assignments(team_id, user_id) do
   project_types =%{
     bet_project: get_project_types("BET Projects"),
@@ -160,8 +213,6 @@ def dev_project_assignments(team_id, user_id) do
     digital_marketing: get_project_types("Digital Marketing"),
     bet_project_partners: get_project_types("BETSoftware Partners"),
   }
-  
-
         [dev_assignment] = [%{
           bet_projects: project_type_dev_assigned(team_id , project_types.bet_project, user_id),
           country_projects: project_type_dev_assigned(team_id , project_types.country_project, user_id),
@@ -172,9 +223,31 @@ def dev_project_assignments(team_id, user_id) do
           bet_project_partners_projects: project_type_dev_assigned(team_id , project_types.bet_project_partners, user_id)
         }]
 
-        dev_assignment
+      dev_assignment
 end
 
+def dev_over_due_project_assignments(team_id, user_id) do
+  project_types =%{
+    bet_project: get_project_types("BET Projects"),
+    country_project: get_project_types("Country"),
+    customer_journey: get_project_types("Customer Journey"),
+    integrations: get_project_types("Integrations"),
+    payment_methods: get_project_types("Payment Methods /Gateways"),
+    digital_marketing: get_project_types("Digital Marketing"),
+    bet_project_partners: get_project_types("BETSoftware Partners"),
+  }
+        [dev_assignment] = [%{
+          bet_projects: over_due_project_type_dev_assigned(team_id , project_types.bet_project, user_id),
+          country_projects: over_due_project_type_dev_assigned(team_id , project_types.country_project, user_id),
+          customer_journey_projects: over_due_project_type_dev_assigned(team_id , project_types.customer_journey, user_id),
+          integrations_projects: over_due_project_type_dev_assigned(team_id , project_types.integrations, user_id),
+          payment_method_projects: over_due_project_type_dev_assigned(team_id , project_types.payment_methods, user_id),
+          digital_marketing_projects: over_due_project_type_dev_assigned(team_id , project_types.digital_marketing, user_id),
+          bet_project_partners_projects: over_due_project_type_dev_assigned(team_id , project_types.bet_project_partners, user_id)
+        }]
+
+      dev_assignment
+end
 
 
 

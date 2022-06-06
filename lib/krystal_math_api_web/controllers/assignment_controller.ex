@@ -44,12 +44,30 @@ defmodule KrystalMathApiWeb.AssignmentController do
     projects_assignment = ProjectAssignments.all_projects_assignment_to_team(team_id)
     render(conn, "assignment_record.json",  projects_assignment: projects_assignment  )
   end
+  
+   # get over due team project assignments
+   def get_over_due_project_assigned_team(conn, %{"id" => team_id}) do
+    projects_assignment = ProjectAssignments.all_over_due_projects_assignment_to_team(team_id)
+    render(conn, "assignment_record.json",  projects_assignment: projects_assignment  )
+  end
 
     # get team project with members assigned members
     def get_project_assigned_details(conn, %{"team_id"=> team_id, "id" => project_id}) do
       projects_assignment = ProjectAssignments.get_project_assigned_details(team_id, project_id)
       render(conn, "assignment_record.json",  projects_assignment: projects_assignment  )
     end
+
+          # map request for Team assignments Projects
+          def overview_project_team_assigned(conn, %{"team_id"=> team_id}) do
+            assignment = ProjectAssignments.team_project_assignments(team_id)
+            render(conn, "project_assignment.json",  assignment: assignment  )
+          end
+
+          # map request for Over Due  Team assignments Projects
+          def overview_over_due_project_team_assigned(conn, %{"team_id"=> team_id}) do
+            assignment = ProjectAssignments.team_over_due_project_assignments(team_id)
+            render(conn, "project_assignment.json",  assignment: assignment  )
+          end
 
   #### Dev/User Assignments ############
 
@@ -60,9 +78,14 @@ defmodule KrystalMathApiWeb.AssignmentController do
     end
     # get project with members assigned members within a team
     def get_project_dev_assigned(conn, %{"team_id"=> team_id, "id" => user_id}) do
-      projects_assignment = ProjectAssignments.get_project_dev_assigned(team_id, user_id)
+      projects_assignment = ProjectAssignments.get_dev_assigned_projects(team_id, user_id)
       render(conn, "assignment_record.json",  projects_assignment: projects_assignment  )
     end
+        # get project with members assigned members within a team
+        def get_over_due_project_dev_assigned(conn, %{"team_id"=> team_id, "id" => user_id}) do
+          projects_assignment = ProjectAssignments.get_over_due_dev_assigned_projects(team_id, user_id)
+          render(conn, "assignment_record.json",  projects_assignment: projects_assignment  )
+        end
        # get project assignments by team , project type and user identification
 
        def project_user_assigned(conn, %{"team_id"=> team_id,"project_type"=> project_type, "id" => user_id}) do
@@ -70,6 +93,13 @@ defmodule KrystalMathApiWeb.AssignmentController do
         render(conn, "assignment_record.json",  projects_assignment: projects_assignment  )
       end
       
+             # get over due project assignments by team , project type and user identification
+
+             def over_due_project_user_assigned(conn, %{"team_id"=> team_id,"project_type"=> project_type, "id" => user_id}) do
+              projects_assignment = ProjectAssignments.over_due_project_type_dev_assigned(team_id,project_type, user_id)
+              render(conn, "assignment_record.json",  projects_assignment: projects_assignment  )
+            end
+            
       ###@@@ LATEST @@@#####
 
       # map request for Dev assignments Projects
@@ -77,7 +107,12 @@ defmodule KrystalMathApiWeb.AssignmentController do
         assignment = ProjectAssignments.dev_project_assignments(team_id, user_id)
         render(conn, "project_assignment.json",  assignment: assignment  )
       end
-      
+            # map request for Over Due Dev assignments Projects
+            def overview_over_due_project_dev_assigned(conn, %{"team_id"=> team_id, "id" => user_id}) do
+              assignment = ProjectAssignments.dev_over_due_project_assignments(team_id, user_id)
+              render(conn, "project_assignment.json",  assignment: assignment  )
+            end
+            
   # # Create Assignment
   def assign_project(conn, %{"projects_assignment" => project_assignment_params}) do
     with {:ok, %ProjectAssignment{} = projects_assignment} <- ProjectAssignments.create_project_assignment(project_assignment_params) do

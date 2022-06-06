@@ -2,8 +2,26 @@ defmodule KrystalMathApi.Projects do
     import Ecto.Query, warn: false
     alias KrystalMathApi.Repo
     alias  KrystalMathApi.Projects.{Project,LiveIssue}
+    alias KrystalMathApi.Projects.CategoriesAndImportance.{ProjectType,ProjectCategoryType}
+
 
     # projects context
+
+    # Get Project Types
+
+    def get_project_types(project_type)  do
+      query = from(pt in ProjectType,select: pt.id, where: pt.name == ^project_type)
+      Repo.one(query)
+    end
+       # Get Project Category 
+
+       def get_project_category(project_category)  do
+        query = from(pt in ProjectCategoryType,select: pt.id, where: pt.name == ^project_category)
+        Repo.one(query)
+      end
+
+
+
     ### SEARCH METHODS ######
 
     # search for projects
@@ -14,18 +32,89 @@ defmodule KrystalMathApi.Projects do
           |> Repo.preload([:team, :user, :project_type, :project_category_type, :project_status, :priority_type])
     end
   # search for projects filtered by project category (Operational, Strategic)
-  def project_category_search(category_type,search_term) do
+  # All Operational Search
+  def project_operational_category_search(search_term) do
+    project_category =%{
+      operational: get_project_category("Operational")
+    }
     search_name = "%#{search_term}%"
        Repo.all(from(p in Project,
-       where: like(p.name, ^search_name) and  p.project_category_type_id == ^category_type))
+       where: like(p.name, ^search_name) and  p.project_category_type_id == ^project_category.operational))
        |> Repo.preload([:team, :user, :project_type, :project_category_type, :project_status, :priority_type])
   end
+  # All strategic search
+  def project_strategic_category_search(search_term) do
+    project_category =%{
+      strategic: get_project_category("Strategic")
+    }
+    search_name = "%#{search_term}%"
+       Repo.all(from(p in Project,
+       where: like(p.name, ^search_name) and  p.project_category_type_id == ^project_category.strategic))
+       |> Repo.preload([:team, :user, :project_type, :project_category_type, :project_status, :priority_type])
+  end
+
+
+
          # search for projects filtered by project category (Operational, Strategic) and team id and project Type
-  def project_type_search(category_type, project_type,search_term) do
+  def project_type_search(category_type, project_type, search_term) do
     search_name = "%#{search_term}%"
        Repo.all(from(p in Project,
        where: like(p.name, ^search_name) and p.project_category_type_id == ^category_type and p.project_type_id == ^project_type ))
        |> Repo.preload([:team, :user, :project_type, :project_category_type, :project_status, :priority_type])
+  end
+
+# Map Search For Operational 
+  def all_operational_project_type_search(search_term) do
+    project_category =%{
+      operational: get_project_category("Operational"),
+      strategic: get_project_category("Strategic")
+    }
+    project_types =%{
+      bet_project: get_project_types("BET Projects"),
+      country_project: get_project_types("Country"),
+      customer_journey: get_project_types("Customer Journey"),
+      integrations: get_project_types("Integrations"),
+      payment_methods: get_project_types("Payment Methods /Gateways"),
+      digital_marketing: get_project_types("Digital Marketing"),
+      bet_project_partners: get_project_types("BETSoftware Partners"),
+    }
+    [search_project] =  [%{
+      bet_projects: project_type_search(project_category.operational , project_types.bet_project,search_term),
+       country_projects: project_type_search(project_category.operational , project_types.country_project,search_term),
+       customer_journey_projects: project_type_search(project_category.operational , project_types.customer_journey,search_term),
+       integrations_projects: project_type_search(project_category.operational , project_types.integrations,search_term),
+       payment_method_projects: project_type_search(project_category.operational , project_types.payment_methods,search_term),
+       digital_marketing_projects: project_type_search(project_category.operational , project_types.digital_marketing,search_term),
+       bet_project_partners_projects: project_type_search(project_category.operational , project_types.bet_project_partners,search_term)
+     }]
+     search_project
+  end
+
+  # Map Search For Strategic  
+  def all_strategic_project_type_search(search_term) do
+    project_category =%{
+      operational: get_project_category("Operational"),
+      strategic: get_project_category("Strategic")
+    }
+    project_types =%{
+      bet_project: get_project_types("BET Projects"),
+      country_project: get_project_types("Country"),
+      customer_journey: get_project_types("Customer Journey"),
+      integrations: get_project_types("Integrations"),
+      payment_methods: get_project_types("Payment Methods /Gateways"),
+      digital_marketing: get_project_types("Digital Marketing"),
+      bet_project_partners: get_project_types("BETSoftware Partners"),
+    }
+    [search_project] =  [%{
+      bet_projects: project_type_search(project_category.strategic , project_types.bet_project,search_term),
+       country_projects: project_type_search(project_category.strategic , project_types.country_project,search_term),
+       customer_journey_projects: project_type_search(project_category.strategic , project_types.customer_journey,search_term),
+       integrations_projects: project_type_search(project_category.strategic , project_types.integrations,search_term),
+       payment_method_projects: project_type_search(project_category.strategic , project_types.payment_methods,search_term),
+       digital_marketing_projects: project_type_search(project_category.strategic , project_types.digital_marketing,search_term),
+       bet_project_partners_projects: project_type_search(project_category.strategic , project_types.bet_project_partners,search_term)
+     }]
+     search_project
   end
 
     ### Team Search 
@@ -44,6 +133,29 @@ defmodule KrystalMathApi.Projects do
        |> Repo.preload([:team, :user, :project_type, :project_category_type, :project_status, :priority_type])
   end
 
+
+
+    # Map Team Search For Strategic  
+    def team_strategic_project_search(team_id, search_term) do
+     project_category =%{
+      strategic: get_project_category("Strategic")
+    }
+    search_name = "%#{search_term}%"
+       Repo.all(from(p in Project,
+       where: like(p.name, ^search_name) and p.project_category_type_id == ^project_category.strategic and p.team_id == ^team_id))
+       |> Repo.preload([:team, :user, :project_type, :project_category_type, :project_status, :priority_type])
+    end
+        # Map Team Search For Operational  
+        def team_operational_project_search(team_id, search_term) do
+          project_category =%{
+            operational: get_project_category("Operational")
+          }
+          search_name = "%#{search_term}%"
+             Repo.all(from(p in Project,
+             where: like(p.name, ^search_name) and p.project_category_type_id == ^project_category.operational and p.team_id == ^team_id))
+             |> Repo.preload([:team, :user, :project_type, :project_category_type, :project_status, :priority_type])
+        end
+
       # search for projects filtered by project category (Operational, Strategic) and team id and project Type
   def team_project_type_search(category_type, project_type, team_id, search_term) do
     search_name = "%#{search_term}%"
@@ -51,6 +163,64 @@ defmodule KrystalMathApi.Projects do
        where: like(p.name, ^search_name) and p.project_category_type_id == ^category_type and p.project_type_id == ^project_type and p.team_id == ^team_id))
        |> Repo.preload([:team, :user, :project_type, :project_category_type, :project_status, :priority_type])
   end
+
+ # Map Team Search For Strategic  and Project types
+ def team_strategic_project_type_search(team_id, search_term) do
+  project_category =%{
+    operational: get_project_category("Operational"),
+    strategic: get_project_category("Strategic")
+  }
+  project_types =%{
+    bet_project: get_project_types("BET Projects"),
+    country_project: get_project_types("Country"),
+    customer_journey: get_project_types("Customer Journey"),
+    integrations: get_project_types("Integrations"),
+    payment_methods: get_project_types("Payment Methods /Gateways"),
+    digital_marketing: get_project_types("Digital Marketing"),
+    bet_project_partners: get_project_types("BETSoftware Partners"),
+  }
+  [search_project] =  [%{
+    bet_projects: team_project_type_search(project_category.strategic , project_types.bet_project,team_id,search_term),
+     country_projects: team_project_type_search(project_category.strategic , project_types.country_project,team_id,search_term),
+     customer_journey_projects: team_project_type_search(project_category.strategic , project_types.customer_journey,team_id,search_term),
+     integrations_projects: team_project_type_search(project_category.strategic , project_types.integrations,team_id,search_term),
+     payment_method_projects: team_project_type_search(project_category.strategic , project_types.payment_methods,team_id,search_term),
+     digital_marketing_projects: team_project_type_search(project_category.strategic , project_types.digital_marketing,team_id,search_term),
+     bet_project_partners_projects: team_project_type_search(project_category.strategic , project_types.bet_project_partners,team_id,search_term)
+   }]
+   search_project
+end
+
+ # Map Team Search For Operational  and Project types
+ def team_operational_project_type_search(team_id, search_term) do
+  project_category =%{
+    operational: get_project_category("Operational"),
+    strategic: get_project_category("Strategic")
+  }
+  project_types =%{
+    bet_project: get_project_types("BET Projects"),
+    country_project: get_project_types("Country"),
+    customer_journey: get_project_types("Customer Journey"),
+    integrations: get_project_types("Integrations"),
+    payment_methods: get_project_types("Payment Methods /Gateways"),
+    digital_marketing: get_project_types("Digital Marketing"),
+    bet_project_partners: get_project_types("BETSoftware Partners"),
+  }
+  [search_project] =  [%{
+    bet_projects: team_project_type_search(project_category.operational , project_types.bet_project,team_id,search_term),
+     country_projects: team_project_type_search(project_category.operational , project_types.country_project,team_id,search_term),
+     customer_journey_projects: team_project_type_search(project_category.operational , project_types.customer_journey,team_id,search_term),
+     integrations_projects: team_project_type_search(project_category.operational , project_types.integrations,team_id,search_term),
+     payment_method_projects: team_project_type_search(project_category.operational , project_types.payment_methods,team_id,search_term),
+     digital_marketing_projects: team_project_type_search(project_category.operational , project_types.digital_marketing,team_id,search_term),
+     bet_project_partners_projects: team_project_type_search(project_category.operational , project_types.bet_project_partners,team_id,search_term)
+   }]
+   search_project
+end
+
+
+
+
     
     def get_all_projects do
         all_projects = from(p in Project, order_by: [desc: p.priority_type_id])
@@ -63,6 +233,8 @@ defmodule KrystalMathApi.Projects do
         |> Repo.get!(id)
         |> Repo.preload([:team, :user, :project_type, :project_category_type, :project_status, :priority_type])
     end
+
+
 
     # Team project by project category
     def team_projects_category_type(team_id, category_type) do
@@ -78,12 +250,80 @@ defmodule KrystalMathApi.Projects do
       |> Repo.preload([:team, :user, :project_type, :project_category_type, :project_status, :priority_type])
      end
 
+     def get_all_team_projects_type(team_id) do
+      project_types =%{
+        bet_project: get_project_types("BET Projects"),
+        country_project: get_project_types("Country"),
+        customer_journey: get_project_types("Customer Journey"),
+        integrations: get_project_types("Integrations"),
+        payment_methods: get_project_types("Payment Methods /Gateways"),
+        digital_marketing: get_project_types("Digital Marketing"),
+        bet_project_partners: get_project_types("BETSoftware Partners"),
+      }
+      [team_project] =  [%{
+        bet_projects: get_team_projects_type(team_id , project_types.bet_project),
+         country_projects: get_team_projects_type(team_id , project_types.country_project),
+         customer_journey_projects: get_team_projects_type(team_id , project_types.customer_journey),
+         integrations_projects: get_team_projects_type(team_id , project_types.integrations),
+         payment_method_projects: get_team_projects_type(team_id , project_types.payment_methods),
+         digital_marketing_projects: get_team_projects_type(team_id , project_types.digital_marketing),
+         bet_project_partners_projects: get_team_projects_type(team_id , project_types.bet_project_partners)
+       }]
+     
+       team_project
+
+
+     end
+
+
 ############ Team project by project category & project type
     def team_projects_category_project_type(team_id, category_type, project_type) do
       all_projects = from(p in Project, order_by: [desc: p.priority_type_id], where: p.project_category_type_id == ^category_type and p.project_type_id == ^project_type and p.team_id == ^team_id)
       Repo.all(all_projects)
       |> Repo.preload([:team, :user, :project_type, :project_category_type, :project_status, :priority_type])
   end
+  # New Map Team Projects By Category
+  def get_all_team_projects_category_project_type(team_id) do
+    project_category =%{
+      operational: get_project_category("Operational"),
+      strategic: get_project_category("Strategic")
+    }
+    project_types =%{
+      bet_project: get_project_types("BET Projects"),
+      country_project: get_project_types("Country"),
+      customer_journey: get_project_types("Customer Journey"),
+      integrations: get_project_types("Integrations"),
+      payment_methods: get_project_types("Payment Methods /Gateways"),
+      digital_marketing: get_project_types("Digital Marketing"),
+      bet_project_partners: get_project_types("BETSoftware Partners"),
+    }
+    [team_category_project] =  [%{operational_team_projects: %{
+      bet_projects: team_projects_category_project_type(team_id,project_category.operational ,project_types.bet_project),
+      country_projects: team_projects_category_project_type(team_id,project_category.operational , project_types.country_project),
+      customer_journey_projects: team_projects_category_project_type(team_id,project_category.operational , project_types.customer_journey),
+      integrations_projects: team_projects_category_project_type(team_id,project_category.operational , project_types.integrations),
+      payment_method_projects: team_projects_category_project_type(team_id,project_category.operational , project_types.payment_methods),
+      digital_marketing_projects: team_projects_category_project_type(team_id,project_category.operational , project_types.digital_marketing),
+      bet_project_partners_projects: team_projects_category_project_type(team_id,project_category.operational , project_types.bet_project_partners)
+     },
+     strategic_team_projects: %{
+      bet_projects: team_projects_category_project_type(team_id,project_category.strategic ,project_types.bet_project),
+      country_projects: team_projects_category_project_type(team_id,project_category.strategic , project_types.country_project),
+      customer_journey_projects: team_projects_category_project_type(team_id,project_category.strategic , project_types.customer_journey),
+      integrations_projects: team_projects_category_project_type(team_id,project_category.strategic , project_types.integrations),
+      payment_method_projects: team_projects_category_project_type(team_id,project_category.strategic , project_types.payment_methods),
+      digital_marketing_projects: team_projects_category_project_type(team_id,project_category.strategic , project_types.digital_marketing),
+      bet_project_partners_projects: team_projects_category_project_type(team_id,project_category.strategic , project_types.bet_project_partners)
+     }
+     
+     }
+    ]
+   
+    team_category_project
+
+
+
+   end
 
 ############# OPERATIONAL PROJETCS ########
     def operational_projects do
@@ -101,13 +341,40 @@ defmodule KrystalMathApi.Projects do
         |> Repo.preload([:team, :user, :project_type, :project_category_type, :project_status, :priority_type])
     end
 
-    def operational_projects_type(project_type) do
-        operation_key = 1
-        all_projects = from(p in Project, order_by: [desc: p.priority_type_id], where: p.project_category_type_id == ^operation_key and p.project_type_id == ^project_type)
+    def operational_projects_type(project_category,project_type) do
+        all_projects = from(p in Project, order_by: [desc: p.priority_type_id], where: p.project_category_type_id == ^project_category and p.project_type_id == ^project_type)
         Repo.all(all_projects)
         |> Repo.preload([:team, :user, :project_type, :project_category_type, :project_status, :priority_type])
     end
 
+    # New Map
+    def get_operational_projects_type do
+      project_category =%{
+        operational: get_project_category("Operational")
+      }
+      project_types =%{
+        bet_project: get_project_types("BET Projects"),
+        country_project: get_project_types("Country"),
+        customer_journey: get_project_types("Customer Journey"),
+        integrations: get_project_types("Integrations"),
+        payment_methods: get_project_types("Payment Methods /Gateways"),
+        digital_marketing: get_project_types("Digital Marketing"),
+        bet_project_partners: get_project_types("BETSoftware Partners"),
+      }
+      [projects] =  [%{
+        bet_projects: operational_projects_type(project_category.operational ,project_types.bet_project),
+         country_projects: operational_projects_type(project_category.operational , project_types.country_project),
+         customer_journey_projects: operational_projects_type(project_category.operational , project_types.customer_journey),
+         integrations_projects: operational_projects_type(project_category.operational , project_types.integrations),
+         payment_method_projects: operational_projects_type(project_category.operational , project_types.payment_methods),
+         digital_marketing_projects: operational_projects_type(project_category.operational , project_types.digital_marketing),
+         bet_project_partners_projects: operational_projects_type(project_category.operational , project_types.bet_project_partners)
+       }]
+     
+       projects
+     end
+
+    # #### 
 
     # All team Projects
     def team_projects(team_id) do
@@ -117,17 +384,39 @@ defmodule KrystalMathApi.Projects do
     end
 
     # get team project using  project types
-    def team_operational_projects_type(team_id,project_type) do
-        operation_key = 1
-        all_projects = from(p in Project, order_by: [desc: p.priority_type_id], where: p.project_category_type_id == ^operation_key and p.team_id == ^team_id and p.project_type_id == ^project_type)
+    def team_operational_projects_type(team_id,project_category,project_type) do
+        all_projects = from(p in Project, order_by: [desc: p.priority_type_id], where: p.project_category_type_id == ^project_category and p.team_id == ^team_id and p.project_type_id == ^project_type)
         Repo.all(all_projects)
         |> Repo.preload([:team, :user, :project_type, :project_category_type, :project_status, :priority_type])
     end
 
- 
+#  New Map
+    def get_team_operational_projects_type(team_id) do
+      project_category =%{
+        operational: get_project_category("Operational")
+      }
+      project_types =%{
+        bet_project: get_project_types("BET Projects"),
+        country_project: get_project_types("Country"),
+        customer_journey: get_project_types("Customer Journey"),
+        integrations: get_project_types("Integrations"),
+        payment_methods: get_project_types("Payment Methods /Gateways"),
+        digital_marketing: get_project_types("Digital Marketing"),
+        bet_project_partners: get_project_types("BETSoftware Partners"),
+      }
+      [team_project] =  [%{
+        bet_projects: team_operational_projects_type(team_id ,project_category.operational ,project_types.bet_project),
+         country_projects: team_operational_projects_type(team_id ,project_category.operational , project_types.country_project),
+         customer_journey_projects: team_operational_projects_type(team_id ,project_category.operational , project_types.customer_journey),
+         integrations_projects: team_operational_projects_type(team_id ,project_category.operational , project_types.integrations),
+         payment_method_projects: team_operational_projects_type(team_id ,project_category.operational , project_types.payment_methods),
+         digital_marketing_projects: team_operational_projects_type(team_id ,project_category.operational , project_types.digital_marketing),
+         bet_project_partners_projects: team_operational_projects_type(team_id ,project_category.operational , project_types.bet_project_partners)
+       }]
+     
+       team_project
+    end
 ########### Strategic Projects #########
-
-
     # strategic projects
     def strategic_projects do
         strategic_key = 2
@@ -144,25 +433,80 @@ defmodule KrystalMathApi.Projects do
         |> Repo.preload([:team, :user, :project_type, :project_category_type, :project_status, :priority_type])
     end
 
-    def strategic_projects_type(project_type) do
-        strategic_key = 2
-        all_projects = from(p in Project, order_by: [desc: p.priority_type_id], where: p.project_category_type_id == ^strategic_key and p.project_type_id == ^project_type)
+    def strategic_projects_type(project_category,project_type) do
+        all_projects = from(p in Project, order_by: [desc: p.priority_type_id], where: p.project_category_type_id == ^project_category and p.project_type_id == ^project_type)
         Repo.all(all_projects)
         |> Repo.preload([:team, :user, :project_type, :project_category_type, :project_status, :priority_type])
     end
+
+    # New Map
+    def get_strategic_projects_type do
+      project_category =%{
+        strategic: get_project_category("Strategic")
+      }
+      project_types =%{
+        bet_project: get_project_types("BET Projects"),
+        country_project: get_project_types("Country"),
+        customer_journey: get_project_types("Customer Journey"),
+        integrations: get_project_types("Integrations"),
+        payment_methods: get_project_types("Payment Methods /Gateways"),
+        digital_marketing: get_project_types("Digital Marketing"),
+        bet_project_partners: get_project_types("BETSoftware Partners"),
+      }
+      [team_project] =  [%{
+        bet_projects: strategic_projects_type(project_category.strategic ,project_types.bet_project),
+         country_projects: strategic_projects_type(project_category.strategic , project_types.country_project),
+         customer_journey_projects: strategic_projects_type(project_category.strategic , project_types.customer_journey),
+         integrations_projects: strategic_projects_type(project_category.strategic , project_types.integrations),
+         payment_method_projects: strategic_projects_type(project_category.strategic , project_types.payment_methods),
+         digital_marketing_projects: strategic_projects_type(project_category.strategic , project_types.digital_marketing),
+         bet_project_partners_projects: strategic_projects_type(project_category.strategic , project_types.bet_project_partners)
+       }]
+     
+       team_project
+     end
 
 # get all strategic team project 
 
       # get team project using  project types
-    def team_strategic_projects_type(team_id, project_type) do
-        strategic_key = 2
-        all_projects = from(p in Project, order_by: [desc: p.priority_type_id], where: p.project_category_type_id == ^strategic_key and p.team_id == ^team_id and p.project_type_id == ^project_type)
+    def team_strategic_projects_type(team_id,project_category, project_type) do
+        all_projects = from(p in Project, order_by: [desc: p.priority_type_id], where: p.project_category_type_id == ^project_category and p.team_id == ^team_id and p.project_type_id == ^project_type)
         Repo.all(all_projects)
         |> Repo.preload([:team, :user, :project_type, :project_category_type, :project_status, :priority_type])
     end
+    # New Map
 
+    def get_team_strategic_projects_type(team_id) do
+      project_category =%{
+        strategic: get_project_category("Strategic")
+      }
+      project_types =%{
+        bet_project: get_project_types("BET Projects"),
+        country_project: get_project_types("Country"),
+        customer_journey: get_project_types("Customer Journey"),
+        integrations: get_project_types("Integrations"),
+        payment_methods: get_project_types("Payment Methods /Gateways"),
+        digital_marketing: get_project_types("Digital Marketing"),
+        bet_project_partners: get_project_types("BETSoftware Partners"),
+      }
+      [team_project] =  [%{
+        bet_projects: team_strategic_projects_type(team_id ,project_category.strategic ,project_types.bet_project),
+         country_projects: team_strategic_projects_type(team_id ,project_category.strategic , project_types.country_project),
+         customer_journey_projects: team_strategic_projects_type(team_id ,project_category.strategic , project_types.customer_journey),
+         integrations_projects: team_strategic_projects_type(team_id ,project_category.strategic , project_types.integrations),
+         payment_method_projects: team_strategic_projects_type(team_id ,project_category.strategic , project_types.payment_methods),
+         digital_marketing_projects: team_strategic_projects_type(team_id ,project_category.strategic , project_types.digital_marketing),
+         bet_project_partners_projects: team_strategic_projects_type(team_id ,project_category.strategic , project_types.bet_project_partners)
+       }]
+     
+       team_project
+     end
+    
+    
+  
+     
 
-    @doc """
+  @doc """
     create new project record
     """
     def create_project(attrs \\ %{}) do

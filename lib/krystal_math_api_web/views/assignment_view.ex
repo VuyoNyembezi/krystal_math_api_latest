@@ -53,8 +53,8 @@ defmodule KrystalMathApiWeb.AssignmentView do
 
 
     def render("project_assignment.json", %{assignment: assignment}) do
-      %{
-     
+     %{
+      
         bet_projects: render_many(assignment.bet_projects, AssignmentView, "full_assign_details.json"),
         country_projects: render_many(assignment.country_projects, AssignmentView, "full_assign_details.json"),
         customer_journey_projects: render_many(assignment.customer_journey_projects, AssignmentView, "full_assign_details.json"),

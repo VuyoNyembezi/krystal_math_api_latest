@@ -47,7 +47,17 @@ defmodule KrystalMathApiWeb.ProjectView do
         updated_at: project.updated_at
       }
     end
-  
+    def render("project_overview.json", %{project: project}) do
+      %{
+         bet_projects: render_many(project.bet_projects, ProjectView, "project_details.json"),
+         country_projects: render_many(project.country_projects, ProjectView, "project_details.json"),
+         customer_journey_projects: render_many(project.customer_journey_projects, ProjectView, "project_details.json"),
+         integrations_projects: render_many(project.integrations_projects, ProjectView, "project_details.json"),
+         payment_method_projects: render_many(project.payment_method_projects, ProjectView, "project_details.json"),
+         digital_marketing_projects: render_many(project.digital_marketing_projects, ProjectView, "project_details.json"),
+         bet_project_partners_projects: render_many(project.bet_project_partners_projects, ProjectView, "project_details.json")
+       }
+     end
 
 # Priority View
 

@@ -25,33 +25,63 @@ defmodule KrystalMathApiWeb.ProjectController do
     end
 
     # search projects  by category e.g( Operational, Strategic)
-    def projects_category_search(conn, %{"category_type" => category_type,"search" => search_term}) do
-      projects = Projects.project_category_search(category_type,search_term)
+    def projects_operational_category_search(conn, %{"search" => search_term}) do
+      projects = Projects.project_operational_category_search(search_term)
+      render(conn,"index.json", projects: projects)
+    end
+    def projects_strategic_category_search(conn, %{"search" => search_term}) do
+      projects = Projects.project_strategic_category_search(search_term)
       render(conn,"index.json", projects: projects)
     end
 
+
     # search projects  by category e.g( Operational, Strategic) and project type
-      def projects_type_search(conn, %{"category_type" => category_type,"project_type" => project_type,"search" => search_term}) do
-        projects = Projects.project_type_search(category_type,project_type,search_term)
-        render(conn,"index.json", projects: projects)
+      # Map category search 
+      def search_operational_projects(conn, %{"search" => search_term}) do
+          project = Projects.all_operational_project_type_search(search_term)
+          render(conn,"project_overview.json", project: project)
       end
-  
+      def search_strategic_projects(conn, %{"search" => search_term}) do
+        project = Projects.all_strategic_project_type_search(search_term)
+        render(conn,"project_overview.json", project: project)
+    end
+    
     # search projects  by category and team id  e.g( Operational, Strategic)
       def team_projects_category_search(conn, %{"category_type" => category_type,"team_id" => team_id,"search" => search_term}) do
         projects = Projects.team_project_category_search(category_type,team_id,search_term)
         render(conn,"index.json", projects: projects)
       end
+      def team_search_strategic_projects(conn, %{"team_id" => team_id,"search" => search_term}) do
+        projects = Projects.team_strategic_project_search(team_id,search_term)
+        render(conn,"index.json", projects: projects)
+    end
+    def team_search_operational_projects(conn, %{"team_id" => team_id,"search" => search_term}) do
+      projects = Projects.team_operational_project_search(team_id,search_term)
+      render(conn,"index.json", projects: projects)
+  end
 
    # search all team projects 
    def all_team_projects_search(conn, %{"team_id" => team_id,"search" => search_term}) do
     projects = Projects.team_project_search(team_id,search_term)
     render(conn,"index.json", projects: projects)
   end
+
+
     # search projects  by category and team id  e.g(, Operational, Strategic)
       def team_projects_type_search(conn, %{"category_type" => category_type,"project_type" => project_type,"team_id" => team_id,"search" => search_term}) do
         projects = Projects.team_project_type_search(category_type,team_id,project_type,search_term)
         render(conn,"index.json", projects: projects)
       end
+
+      def team_search_strategic_projects_project_type(conn, %{"team_id" => team_id,"search" => search_term}) do
+        project = Projects.team_strategic_project_type_search(team_id,search_term)
+        render(conn,"project_overview.json", project: project)
+    end
+    def team_search_operational_projects_project_type(conn, %{"team_id" => team_id,"search" => search_term}) do
+      project = Projects.team_operational_project_type_search(team_id,search_term)
+      render(conn,"project_overview.json", project: project)
+    end
+
 
     # Operational Projects
 
@@ -64,10 +94,12 @@ defmodule KrystalMathApiWeb.ProjectController do
         render(conn,"index.json", projects: projects)
     end
 
-    def all_operational_projects_types(conn, %{"project_type" => project_type}) do
-        projects = Projects.operational_projects_type(project_type)
-        render(conn,"index.json", projects: projects)
-    end
+
+# Map 
+    def get_operational_projects_types(conn, _params) do
+      project = Projects.get_operational_projects_type()
+      render(conn,"project_overview.json", project: project)
+  end
 
      # Strategic Projects
 
@@ -80,13 +112,12 @@ defmodule KrystalMathApiWeb.ProjectController do
         projects = Projects.unassigned_strategic_projects()
         render(conn,"index.json", projects: projects)
     end
+# Map Strategic 
+def get_strategic_projects_types(conn, _params) do
+  project = Projects.get_strategic_projects_type()
+  render(conn,"project_overview.json", project: project)
+end
 
-    def all_strategic_projects_types(conn, %{"project_type" => project_type}) do
-        projects = Projects.strategic_projects_type(project_type)
-        render(conn,"index.json", projects: projects)
-    end
-
-   
 
 # TEAM Project BASED CONTROLLERS
 def team_projects(conn, %{"team_id" => team_id}) do
@@ -100,12 +131,21 @@ def team_projects_by_category(conn, %{"team_id" => team_id,"category_type" => ca
     projects = Projects.team_projects_category_type(team_id, category_type)
     render(conn,"index.json", projects: projects)
 end
+
 # Team Projects by type
 
-def team_projects_type(conn, %{"team_id" => team_id,"project_type" => project_type}) do
-  projects = Projects.get_team_projects_type(team_id, project_type)
-  render(conn,"index.json", projects: projects)
+def team_projects_type(conn, %{"team_id" => team_id}) do
+  project = Projects.get_all_team_projects_type(team_id)
+  render(conn,"project_overview.json", project: project)
 end
+
+
+
+
+
+
+
+
 # Team projects by category (Operational, Strategic)
 
 def team_projects_by_type_and_category(conn, %{"team_id" => team_id,"category_type" => category_type,"project_type" => project_type}) do
@@ -114,17 +154,19 @@ def team_projects_by_type_and_category(conn, %{"team_id" => team_id,"category_ty
 end
 # Operational Projects
 
-def team_operational_project_types(conn, %{"team_id" => team_id, "project_type" => project_type}) do
-    projects = Projects.team_operational_projects_type(team_id, project_type)
-    render(conn,"index.json", projects: projects)
+def team_operational_project_types(conn, %{"team_id" => team_id}) do
+  project = Projects.get_team_operational_projects_type(team_id)
+  render(conn,"project_overview.json", project: project)
 end
+
 
 # Strategic Projects
-
-def team_strategic_project_types(conn, %{"team_id" => team_id, "project_type" => project_type}) do
-    projects = Projects.team_strategic_projects_type(team_id, project_type)
-    render(conn,"index.json", projects: projects)
+def team_strategic_project_types(conn, %{"team_id" => team_id}) do
+  project = Projects.get_team_strategic_projects_type(team_id)
+  render(conn,"project_overview.json", project: project)
 end
+
+
 
 # Create New Record
 
