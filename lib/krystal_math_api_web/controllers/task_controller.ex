@@ -35,44 +35,18 @@ end
 
 ##### Team ########
 
- @doc """
-  gets all  team tasks
-  """
-def get_team_tasks(conn, %{"id" => team_id}) do
-    tasks = TaskOperations.all_team_tasks(team_id)
-    render(conn, "index.json", tasks: tasks)
+
+
+@doc """
+team tasks Map (over_due tasks,open tasks, all tasks, active tasks, not active tasks)
+"""
+
+def team_tasks(conn, %{"id"=> team_id}) do
+  task_overview = TaskOperations.team_tasks(team_id)
+  render(conn, "task_overview.json", task_overview: task_overview)
+
 end
 
- @doc """
-  gets all active team tasks
-  """
-  def get_active_team_tasks(conn, %{"id" => team_id}) do
-    tasks = TaskOperations.active_team_tasks(team_id)
-    render(conn, "index.json", tasks: tasks)
-end
-
- @doc """
-  gets all not active team tasks
-  """
-  def get_not_active_team_tasks(conn, %{"id" => team_id}) do
-    tasks = TaskOperations.not_active_team_tasks(team_id)
-    render(conn, "index.json", tasks: tasks)
-end
- @doc """
-  gets all active and vaild and visible to team members tasks
-  """
-  def open_team_tasks(conn, %{"id" => team_id}) do
-    tasks = TaskOperations.active_open_team_tasks(team_id)
-    render(conn, "index.json", tasks: tasks)
-end
-
- @doc """
-  gets all over-due team tasks
-  """
-  def over_due_team_tasks(conn, %{"id" => team_id}) do
-    tasks = TaskOperations.team_over_due_tasks(team_id)
-    render(conn, "index.json", tasks: tasks)
-end
 
 ##### User/Dev ########
  @doc """

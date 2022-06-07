@@ -48,6 +48,19 @@ defmodule KrystalMathApiWeb.TaskView do
       updated_at: task.updated_at
     }
   end
+  def render("task_overview.json", %{task_overview: task_overview}) do
+    %{
+      all_tasks: render_many( task_overview.all_tasks, TaskView, "full_task_details.json"),
+      active_tasks: render_many(task_overview.active_tasks, TaskView, "full_task_details.json"),
+      not_active_tasks: render_many(task_overview.not_active_tasks, TaskView, "full_task_details.json"),
+       open_tasks: render_many(task_overview.open_tasks, TaskView, "full_task_details.json"),
+       over_due_tasks: render_many(task_overview.over_due_tasks, TaskView, "full_task_details.json"),
+       completed_tasks: render_many(task_overview.completed_tasks, TaskView, "full_task_details.json")
+    }
+  end
+
+
+
 
   # USER JSON VIEW USED FOR ASSOCIATION
 

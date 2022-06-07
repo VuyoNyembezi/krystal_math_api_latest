@@ -4,7 +4,7 @@ import Ecto.Query, warn: false
 
 alias KrystalMathApi.Repo
 alias KrystalMathApi.Operations.Task
-
+alias KrystalMathApi.Operations.TaskStatus
 @doc """
 search team task
 """
@@ -26,6 +26,7 @@ def user_task_search(team_id, user_id, search_term) do
 end
 
 
+
    @doc """
   get task by id
   """
@@ -34,6 +35,13 @@ end
   def get_task!(id) do
     Task
     |> Repo.get!(id)
+  end
+
+  # get task status id by name
+ 
+  defp get_task_status(task_status_name)  do
+    query = from(ts in TaskStatus,select: ts.id, where: ts.name == ^task_status_name)
+    Repo.one(query)
   end
 
 
@@ -64,48 +72,67 @@ end
   end
 
   ########### Team Task Methods ############
-       @doc """
-        gets all user tasks
-        """
-  def all_team_tasks(team_id) do
+    
+  defp all_team_tasks(team_id) do
     query = from(t in Task, where: t.team_id == ^team_id )
     Repo.all(query)
     |> Repo.preload([:team, :user, :task_status, :environment])
   end
-    @doc """
-  gets all  active team tasks tasks
-  """
-   def active_team_tasks(team_id) do
+
+   defp active_team_tasks(team_id) do
     query = from( u in Task, where: u.active == true and u.team_id == ^team_id)
     Repo.all(query)
     |> Repo.preload([:team, :user,:task_status,:environment])
   end
-  @doc """
-  gets all not active team tasks
-  """
-  def not_active_team_tasks(team_id) do
+
+  defp not_active_team_tasks(team_id) do
     query = from( u in Task, where: u.active == false  and u.team_id == ^team_id)
     Repo.all(query)
     |> Repo.preload([:team, :user,:task_status, :environment])
   end
-  @doc """
-  gets all  active and open team  tasks
-  """
-  def active_open_team_tasks(team_id) do
+
+  defp active_open_team_tasks(team_id) do
     query = from u in Task, 
     where:  u.due_date >= ^DateTime.utc_now and u.active == true and u.team_id == ^team_id
     Repo.all(query)
     |> Repo.preload([:team, :user,:task_status,:environment])
   end
-  @doc """
-  gets all active but overdue  user tasks
-  """
-  def team_over_due_tasks(team_id) do
+
+  defp team_over_due_tasks(team_id) do
     query = from t in Task, 
     where: t.due_date <= ^DateTime.utc_now and t.team_id == ^team_id and t.active == true
     Repo.all(query)
     |> Repo.preload([:team, :user,:task_status, :environment])
   end
+
+  defp team_completed(team_id) do
+      completed_key =%{
+        completed: get_task_status("Completed")
+      }
+    query = from(t in Task, where: t.team_id == ^team_id and t.active == false and t.task_status_id == ^completed_key.completed )
+    Repo.all(query)
+    |> Repo.preload([:team, :user,:task_status, :environment])
+  end
+
+
+@doc """
+team tasks Map (over_due tasks,open tasks, all tasks, active tasks, not active tasks)
+"""
+
+def team_tasks(team_id) do
+full_team_task_overview = %{
+
+all_tasks: all_team_tasks(team_id),
+active_tasks: active_team_tasks(team_id),
+not_active_tasks: not_active_team_tasks(team_id),
+open_tasks: active_open_team_tasks(team_id),
+over_due_tasks: team_over_due_tasks(team_id),
+completed_tasks: team_completed(team_id)
+}
+full_team_task_overview
+end
+
+
 
 #######   User Task Methods #########
 

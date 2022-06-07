@@ -293,11 +293,9 @@ get "/project_assignment/over_due/team/all", AssignmentController, :overview_ove
     get "/tasks/not_active", TaskController, :get_not_active_tasks
 
     ### Team ##
-    get "/team/tasks/all", TaskController, :get_team_tasks
-    get "/team/tasks/active", TaskController, :get_active_team_tasks
-    get "/team/tasks/not_active", TaskController, :get_not_active_team_tasks
-    get "/team/tasks/open", TaskController, :open_team_tasks
-    get "/team/tasks/over_due", TaskController, :over_due_team_tasks
+
+    get "team/tasks", TaskController, :team_tasks
+
 
     get "/team/tasks/counters", TaskController, :get_team_tasks_counter
       ### User or Dev ##
