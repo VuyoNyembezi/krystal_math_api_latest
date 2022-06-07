@@ -299,12 +299,7 @@ get "/project_assignment/over_due/team/all", AssignmentController, :overview_ove
 
     get "/team/tasks/counters", TaskController, :get_team_tasks_counter
       ### User or Dev ##
-      get "/user/tasks/all", TaskController, :get_user_tasks
-      get "/user/tasks/active/open", TaskController, :get_open_user_tasks
-      get "/user/tasks/active", TaskController, :get_active_user_tasks
-      get "/user/tasks/not_active", TaskController, :get_not_active_user_tasks
-      get "/user/tasks/over_due", TaskController, :over_due_user_tasks
-      get "/user/tasks/completed", TaskController, :completed_user_tasks
+      get "/user/tasks", TaskController, :map_user_tasks
 
     post "/task/create", TaskController, :create_task
 

@@ -49,53 +49,18 @@ end
 
 
 ##### User/Dev ########
- @doc """
-  gets all  user tasks
-  """
 
-  def get_user_tasks(conn, %{"team_id" => team_id,"id" => user_id}) do
-    tasks = TaskOperations.user_tasks(team_id,user_id)
-    render(conn, "index.json", tasks: tasks)
+
+@doc """
+user tasks Map (over_due tasks,open tasks, all tasks, active tasks, not active tasks)
+"""
+
+def map_user_tasks(conn, %{"id"=> team_id,"user_id"=> user_id}) do
+  task_overview = TaskOperations.user_tasks_overview(team_id,user_id)
+  render(conn, "task_overview.json", task_overview: task_overview)
+
 end
 
- @doc """
-  gets all active and not overdue user tasks
-  """
-  def get_open_user_tasks(conn, %{"team_id" => team_id,"id" => user_id}) do
-    tasks = TaskOperations.user_active_tasks(team_id,user_id)
-    render(conn, "index.json", tasks: tasks)
-end
-
- @doc """
-  gets all active user tasks 
-  """
-  def get_active_user_tasks(conn, %{"team_id" => team_id,"id" => user_id}) do
-    tasks = TaskOperations.user_all_active_tasks(team_id,user_id)
-    render(conn, "index.json", tasks: tasks)
-end
-
- @doc """
-  gets all not active user tasks
-  """
-  def get_not_active_user_tasks(conn, %{"team_id" => team_id,"id" => user_id}) do
-    tasks = TaskOperations.user_all_not_active_tasks(team_id,user_id)
-    render(conn, "index.json", tasks: tasks)
-end
-
- @doc """
-  gets all over-due user tasks
-  """
-  def over_due_user_tasks(conn, %{"team_id" => team_id,"id" => user_id}) do
-    tasks = TaskOperations.user_over_due_tasks(team_id,user_id)
-    render(conn, "index.json", tasks: tasks)
-  end
- @doc """
-  gets all completed user tasks
-  """
-  def completed_user_tasks(conn, %{"team_id" => team_id,"id" => user_id}) do
-    tasks = TaskOperations.user_completed_tasks(team_id,user_id)
-    render(conn, "index.json", tasks: tasks)
-  end
 
 ## CREATE ##
  @doc """

@@ -25,8 +25,6 @@ def user_task_search(team_id, user_id, search_term) do
       |> Repo.preload([:team, :user, :task_status,:environment])
 end
 
-
-
    @doc """
   get task by id
   """
@@ -136,63 +134,76 @@ end
 
 #######   User Task Methods #########
 
-  @doc """
-    gets all user tasks
-  """
-  def user_tasks(team_id,user_id) do
+  
+    # gets all user tasks
+  
+  defp user_tasks(team_id,user_id) do
     query = from(t in Task, where: t.user_id == ^user_id and t.team_id == ^team_id)
     Repo.all(query)
     |> Repo.preload([:team, :user,:task_status, :environment])
   end
 
- @doc """
-  gets all active user tasks
- """
+ 
+  # gets all active user tasks
+ 
 
-  def user_active_tasks(team_id,user_id) do
+  defp user_active_tasks(team_id,user_id) do
     query = from(t in Task, where: t.due_date >= ^DateTime.utc_now and t.user_id == ^user_id and t.team_id == ^team_id  and t.active == true)
     Repo.all(query)
     |> Repo.preload([:team, :user,:task_status, :environment])
   end
 
-  @doc """
-    gets all active but overdue  user tasks
-  """
+  
+    # gets all active but overdue  user tasks
+  
 
-  def user_over_due_tasks(team_id,user_id) do
+  defp user_over_due_tasks(team_id,user_id) do
     query = from(t in Task, where: t.due_date <= ^DateTime.utc_now and t.user_id == ^user_id and t.team_id == ^team_id and t.active == true)
     Repo.all(query)
     |> Repo.preload([:team, :user,:task_status, :environment])
   end
 
-  @doc """
-    gets all completed user tasks
-  """
-  def user_completed_tasks(team_id, user_id) do
-    completed_key = 5
-    query = from(t in Task, where: t.user_id == ^user_id and t.team_id == ^team_id and t.active == false and t.task_status_id == ^completed_key )
+    # gets all completed user tasks
+
+  defp user_completed_tasks(team_id, user_id) do
+    completed_key =%{
+      completed: get_task_status("Completed")
+    }
+    query = from(t in Task, where: t.user_id == ^user_id and t.team_id == ^team_id and t.active == false and t.task_status_id == ^completed_key.completed )
     Repo.all(query)
     |> Repo.preload([:team, :user, :task_status, :environment])
   end
- @doc """
-  gets all not active user tasks
- """
 
-  def user_all_not_active_tasks(team_id,user_id) do
+  # gets all not active user tasks
+
+  defp user_all_not_active_tasks(team_id,user_id) do
     query = from(t in Task, where: t.user_id == ^user_id and t.team_id == ^team_id and t.active == false)
     Repo.all(query)
     |> Repo.preload([:team, :user,:task_status, :environment])
   end
 
- @doc """
-  gets all  active user tasks
- """
+  # gets all  active user tasks
 
-  def user_all_active_tasks(team_id,user_id) do
+  defp user_all_active_tasks(team_id,user_id) do
     query = from(t in Task, where: t.user_id == ^user_id and t.team_id == ^team_id and t.active == true)
     Repo.all(query)
     |> Repo.preload([:team, :user,:task_status, :environment])
   end
+@doc """
+user/dev tasks Map (over_due tasks,open tasks, all tasks, active tasks, not active tasks)
+"""
+
+def user_tasks_overview(team_id,user_id) do
+  full_user_task_overview = %{
+  all_tasks: user_tasks(team_id,user_id),
+  active_tasks: user_all_active_tasks(team_id,user_id),
+  not_active_tasks: user_all_not_active_tasks(team_id,user_id),
+  open_tasks: user_active_tasks(team_id,user_id),
+  over_due_tasks: user_over_due_tasks(team_id,user_id),
+  completed_tasks: user_completed_tasks(team_id,user_id)
+  }
+  full_user_task_overview
+end 
 
 @doc """
     Creae new Task 
