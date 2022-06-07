@@ -35,8 +35,6 @@ end
 
 ##### Team ########
 
-
-
 @doc """
 team tasks Map (over_due tasks,open tasks, all tasks, active tasks, not active tasks)
 """
@@ -47,10 +45,7 @@ def team_tasks(conn, %{"id"=> team_id}) do
 
 end
 
-
 ##### User/Dev ########
-
-
 @doc """
 user tasks Map (over_due tasks,open tasks, all tasks, active tasks, not active tasks)
 """
@@ -58,9 +53,7 @@ user tasks Map (over_due tasks,open tasks, all tasks, active tasks, not active t
 def map_user_tasks(conn, %{"id"=> team_id,"user_id"=> user_id}) do
   task_overview = TaskOperations.user_tasks_overview(team_id,user_id)
   render(conn, "task_overview.json", task_overview: task_overview)
-
 end
-
 
 ## CREATE ##
  @doc """

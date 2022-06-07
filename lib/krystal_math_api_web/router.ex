@@ -255,20 +255,21 @@ defmodule KrystalMathApiWeb.Router do
     get "/project_assignment/team", AssignmentController, :get_project_assigned_team
 
 # New Map Request endpoint 
+
 get "/project_assignment/team/all", AssignmentController, :overview_project_team_assigned
+# Over due project assignments
 get "/project_assignment/over_due/team/all", AssignmentController, :overview_over_due_project_team_assigned
 
     
-    get "/project_assignment/over_due/team", AssignmentController, :get_over_due_project_assigned_team
+   
     get "/project_assignment/details", AssignmentController, :get_project_assigned_details
     get "/project_assignment/dev", AssignmentController, :get_project_dev_assigned
     get "/project_assignment/over_due/dev", AssignmentController, :get_over_due_project_dev_assigned
 
-    get "/project_assignment/dev/project_type", AssignmentController, :project_user_assigned
-    get "/project_assignment/dev/over_due/project_type", AssignmentController, :over_due_project_user_assigned
 
     # New Map Request endpoint
     get "/project_assignment/dev/all", AssignmentController, :overview_project_dev_assigned
+    # Dev/User Over Project assignment
     get "/project_assignment/over_due/dev/all", AssignmentController, :overview_over_due_project_dev_assigned
     
     #search
@@ -292,13 +293,12 @@ get "/project_assignment/over_due/team/all", AssignmentController, :overview_ove
     get "/tasks/active", TaskController, :get_active_tasks
     get "/tasks/not_active", TaskController, :get_not_active_tasks
 
-    ### Team ##
+    ### Team Tasks Map (completed,not acive ,active , overdue)##
 
     get "team/tasks", TaskController, :team_tasks
 
-
     get "/team/tasks/counters", TaskController, :get_team_tasks_counter
-      ### User or Dev ##
+      ### User/Dev Tasks Map (completed,not acive ,active , overdue)##
       get "/user/tasks", TaskController, :map_user_tasks
 
     post "/task/create", TaskController, :create_task
