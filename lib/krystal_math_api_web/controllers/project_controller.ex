@@ -353,6 +353,12 @@ def project_count_by_category(conn, %{"category_type" => category_id}) do
   render(conn, "counter_details.json",counter: counter )
 end
 
+def project_count_category(conn, _params) do
+  project_count = Projects.projects_category_counter()
+  render(conn, "projects_counter.json",project_count: project_count )
+end
+
+
 #All Projects Status Counters
 
 
@@ -365,6 +371,10 @@ end
 def projects_category_statuses(conn, %{"category_type" => category_type}) do
   project_statsuses = Projects.projects_statuses_category(category_type)
   render(conn, "project_statuses.json", project_statsuses: project_statsuses)
+end
+def projects_category_statuses_all(conn, _params) do
+  project_statsuses = Projects.overview_projects_statuses()
+  render(conn, "projects_overview.json", project_statsuses: project_statsuses)
 end
 
 ################## TEAM COUNTERS #####################

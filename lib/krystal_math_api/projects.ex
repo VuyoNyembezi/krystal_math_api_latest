@@ -773,9 +773,30 @@ iex> projects_counter(1)
 
   def project_counter_category(category_id) do
     projects = from(p in Project,
-    select: %{projects_count: count(p.id)}, where: p.project_category_type_id == ^category_id)
+    select: count(p.id), where: p.project_category_type_id == ^category_id)
     Repo.one(projects)
   end
+  def projects_category_counter do
+    project_category =%{
+      strategic: get_project_category("Strategic"),
+      operational: get_project_category("Operational")
+    }
+    projects_category_count =%{ operational: %{
+      projects_count: project_counter_category(project_category.operational)
+    },
+    strategic: %{
+      projects_count: project_counter_category(project_category.strategic)
+    },
+    live_issues: %{
+      projects_count: all_live_issues_overview()
+    }
+    }
+    projects_category_count
+  end
+
+
+
+
 
   # All Project Status Counters
   def projects_not_started_status do
@@ -841,7 +862,6 @@ iex> projects_statuses(1)
       dev_complete: projects_dev_complete_status() ,
       qa: projects_qa_status(),
       deployed: projects_deployed_status()
-
     }
     projects_statuses_count
   end
@@ -913,10 +933,42 @@ iex> projects_statuses_category(1)
       dev_complete: projects_dev_complete_status_category_type(category_type) ,
       qa: projects_qa_status_category_type(category_type),
       deployed: projects_deployed_status_category_type(category_type)
-
     }
     projects_statuses_category_count
   end
+
+  def overview_projects_statuses do
+    project_category =%{
+      strategic: get_project_category("Strategic"),
+      operational: get_project_category("Operational")
+    }
+
+
+    projects_statuses_category_count =%{ operational: %{
+          not_started: projects_not_started_status_category_type(project_category.operational) ,
+          planning: projects_planning_status_category_type(project_category.operational) ,
+          under_investigation: projects_investigation_status_category_type(project_category.operational) ,
+          on_hold: projects_hold_status_category_type(project_category.operational),
+          in_progress: projects_progress_status_category_type(project_category.operational),
+          dev_complete: projects_dev_complete_status_category_type(project_category.operational) ,
+          qa: projects_qa_status_category_type(project_category.operational),
+          deployed: projects_deployed_status_category_type(project_category.operational)
+    },
+    strategic: %{
+      not_started: projects_not_started_status_category_type(project_category.strategic) ,
+      planning: projects_planning_status_category_type(project_category.strategic) ,
+      under_investigation: projects_investigation_status_category_type(project_category.strategic) ,
+      on_hold: projects_hold_status_category_type(project_category.strategic),
+      in_progress: projects_progress_status_category_type(project_category.strategic),
+      dev_complete: projects_dev_complete_status_category_type(project_category.strategic) ,
+      qa: projects_qa_status_category_type(project_category.strategic),
+      deployed: projects_deployed_status_category_type(project_category.strategic)
+    }
+     
+    }
+    projects_statuses_category_count
+  end
+
 
 
 ######### Team Projects Counters ############

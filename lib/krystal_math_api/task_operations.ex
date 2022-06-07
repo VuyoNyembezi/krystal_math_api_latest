@@ -5,6 +5,27 @@ import Ecto.Query, warn: false
 alias KrystalMathApi.Repo
 alias KrystalMathApi.Operations.Task
 
+@doc """
+search team task
+"""
+def team_task_search(team_id,search_term) do
+  search_name = "%#{search_term}%"
+      Repo.all(from(t in Task,
+      where: like(t.name, ^search_name) and t.team_id == ^team_id))
+      |> Repo.preload([:team, :user, :task_status,:environment])
+end
+
+@doc """
+search dev team task
+"""
+def user_task_search(team_id, user_id, search_term) do
+  search_name = "%#{search_term}%"
+      Repo.all(from(t in Task,
+      where: like(t.name, ^search_name) and t.team_id == ^team_id and t.user_id == ^user_id))
+      |> Repo.preload([:team, :user, :task_status,:environment])
+end
+
+
    @doc """
   get task by id
   """

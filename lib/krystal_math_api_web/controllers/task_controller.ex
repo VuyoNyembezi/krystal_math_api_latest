@@ -4,6 +4,16 @@ defmodule KrystalMathApiWeb.TaskController do
     alias KrystalMathApi.Operations.Task
     action_fallback KrystalMathApiWeb.FallbackController
 
+# Search Team Tasks 
+def team_tasks_search(conn, %{"team_id" => team_id,"search" => search_term}) do
+  tasks = TaskOperations.team_task_search(team_id, search_term)
+  render(conn,"index.json", tasks: tasks)
+end
+# Search User Tasks 
+def user_tasks_search(conn, %{"team_id" => team_id,"user_id" => user_id,"search" => search_term}) do
+  tasks = TaskOperations.user_task_search(team_id, user_id,search_term)
+  render(conn,"index.json", tasks: tasks)
+end
 
 # get all tasks
 def get_tasks(conn, _params) do

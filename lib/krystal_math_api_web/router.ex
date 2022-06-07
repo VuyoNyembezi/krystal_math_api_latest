@@ -209,6 +209,7 @@ defmodule KrystalMathApiWeb.Router do
     # get "/projects/count", ProjectController, :project_count
  
     get "/projects/count/category", ProjectController, :project_count_by_category
+    get "/projects/category/counter", ProjectController, :project_count_category
 
     # All project Counters
     get "/projects/count", ProjectController, :projects_counter
@@ -220,6 +221,7 @@ defmodule KrystalMathApiWeb.Router do
     # project status counters by category ( Operational, Strategic)
 
     get "/projects/category/count", ProjectController, :projects_category_statuses
+    get "/projects/status/counter", ProjectController, :projects_category_statuses_all
     #Team Project Counters 
     get "/team/project/count", ProjectController, :team_projects_count
 
@@ -280,6 +282,11 @@ get "/project_assignment/over_due/team/all", AssignmentController, :overview_ove
   ####### Counters #####
     get "/project_assignments/user/count", AssignmentController, :user_project_assignment
 ######### Task Controller #########
+
+    # search endpoints
+    get "/team/tasks/search", TaskController, :team_tasks_search
+    get "/user/tasks/search", TaskController, :user_tasks_search
+
 
     get "/tasks/all", TaskController, :get_tasks
     get "/tasks/active", TaskController, :get_active_tasks

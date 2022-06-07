@@ -427,7 +427,7 @@ end
             deployed: counter.deployed
           }
         end
-
+# Maps Counter Views
 
         def render("project_overview.json", %{project_overview: project_overview}) do
           %{
@@ -466,6 +466,20 @@ end
             dev_complete: project_statsuses.dev_complete,
             qa: project_statsuses.qa,
             deployed: project_statsuses.deployed
+          }
+        end
+
+        def render("projects_overview.json", %{project_statsuses: project_statsuses}) do
+          %{
+            operational: project_statsuses.operational,
+            strategic: project_statsuses.strategic,
+          }
+        end
+        def render("projects_counter.json", %{project_count: project_count}) do
+          %{
+            operational: project_count.operational,
+            strategic: project_count.strategic,
+            live_issues: project_count.live_issues,
           }
         end
 
