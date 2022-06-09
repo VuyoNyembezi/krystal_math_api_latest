@@ -25,5 +25,11 @@ defmodule KrystalMathApi.Projects.Project do
       |> validate_required([:project_type_id,:name, :business_request_document_status, :team_id, :user_id, :project_status_id, :priority_type_id,  :project_category_type_id])
       |> unique_constraint(:name)
   end
+
+  def team_changeset(project, attrs) do
+    project
+      |> cast(attrs, [:last_status_change, :project_status_id ])
+      |> validate_required([ :project_status_id])
+  end
   end
   

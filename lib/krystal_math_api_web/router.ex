@@ -169,34 +169,31 @@ defmodule KrystalMathApiWeb.Router do
       
     # Create Project
     post "/create/project", ProjectController, :create_new_project
+    # Update Project
     put "/update/project", ProjectController, :update_project
+    # Team Update Project
+    put "/team/update/project", ProjectController, :team_update_projects
 
       ####### Live Issues #############
 
-      # search
-      get "/live_issues/all/search", ProjectController, :live_issuses_search
-      get "/live_issues/active/search", ProjectController, :active_live_issuses_search
-      get "/live_issues/not_active/search", ProjectController, :not_active_live_issuses_search
-      get "/live_issues/completed/search", ProjectController, :completed_live_issuses_search
+      # search all live issues (acitive, not active, completed ,etc)
+      get "/live_issues/search", ProjectController, :all_live_issues_search
 
-      get "/live_issues/all", ProjectController, :get_live_issuses
-      get "/live_issues/status/all", ProjectController, :get_live_issues_status
-      get "/live_issues/active/all", ProjectController, :get_active_live_issuses
-      get "/live_issues/not_active/all", ProjectController, :get_not_active_live_issuses
-      get "/live_issues/completed/all", ProjectController, :get_completed_live_issuses
 
+
+# All Live Issues Overview (acitive, not active, completed ,etc)
+      get "/live_issues", ProjectController, :all_live_issues_overview
       # team
       # search
-      get "/live_issues/team/search", ProjectController, :team_live_issuses_search
-      get "/live_issues/team/active/search", ProjectController, :active_team_live_issuses_search
-      get "/live_issues/team/not_active/search", ProjectController, :not_active_team_live_issuses_search
-      get "/live_issues/team/completed/search", ProjectController, :completed_team_live_issuses_search
 
-      get "/team/live_issues/all", ProjectController, :get_all_team_live_issuses
+      get "/live_issues/team/search", ProjectController, :team_live_issues_search
+
+      # Team Live Issues Statuses
       get "/team/live_issues/status/all", ProjectController, :get_all_team_live_issuses_status
-      get "/team/live_issues/active/all", ProjectController, :get_active_team_live_issuses
-      get "/team/live_issues/not_active/all", ProjectController, :get_not_active_team_live_issuses
-      get "/team/live_issues/completed/all", ProjectController, :get_completed_team_live_issuses
+    
+    #  Team Live View projects 
+      get "/team/live_issues", ProjectController, :team_live_issues_overview
+      
         # Create live issue
     post "/create/live_issues", ProjectController, :create_new_live_issue
     # update live issue
@@ -245,6 +242,7 @@ defmodule KrystalMathApiWeb.Router do
 # TEAM
    
     get "/live_issues/team/count/overview", ProjectController, :team_live_issues_counter
+    # Team live issues Status Counters
     get "/live_issues/team/count/statuses", ProjectController, :team_live_statuses
 
 ############## Project Assignments ##########################
@@ -260,12 +258,9 @@ get "/project_assignment/team/all", AssignmentController, :overview_project_team
 # Over due project assignments
 get "/project_assignment/over_due/team/all", AssignmentController, :overview_over_due_project_team_assigned
 
-    
-   
     get "/project_assignment/details", AssignmentController, :get_project_assigned_details
     get "/project_assignment/dev", AssignmentController, :get_project_dev_assigned
     get "/project_assignment/over_due/dev", AssignmentController, :get_over_due_project_dev_assigned
-
 
     # New Map Request endpoint
     get "/project_assignment/dev/all", AssignmentController, :overview_project_dev_assigned
@@ -287,7 +282,11 @@ get "/project_assignment/over_due/team/all", AssignmentController, :overview_ove
     # search endpoints
     get "/team/tasks/search", TaskController, :team_tasks_search
     get "/user/tasks/search", TaskController, :user_tasks_search
-
+    # New Route
+    # Team Search
+    get "/team/search", TaskController, :team_search_tasks
+    # User Search
+    get "/user/search", TaskController, :user_search_tasks
 
     get "/tasks/all", TaskController, :get_tasks
     get "/tasks/active", TaskController, :get_active_tasks

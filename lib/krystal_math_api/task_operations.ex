@@ -15,6 +15,61 @@ def team_task_search(team_id,search_term) do
       |> Repo.preload([:team, :user, :task_status,:environment])
 end
 
+
+def team_search(team_id,search_term) do
+  [full_team_search] = [%{
+  
+  all_tasks: all_team_task_search(team_id,search_term),
+  active_tasks: active_team_task_search(team_id,search_term),
+  not_active_tasks: not_active_team_task_search(team_id,search_term),
+  open_tasks: open_team_task_search(team_id,search_term),
+  over_due_tasks: overdue_team_task_search(team_id,search_term),
+  completed_tasks: completed_team_task_search(team_id,search_term)
+  }]
+  full_team_search
+  end
+
+defp all_team_task_search(team_id,search_term) do
+  search_name = "%#{search_term}%"
+      Repo.all(from(t in Task,
+      where: like(t.name, ^search_name) and  t.team_id == ^team_id))
+      |> Repo.preload([:team, :user, :task_status,:environment])
+end
+defp active_team_task_search(team_id,search_term) do
+  search_name = "%#{search_term}%"
+      Repo.all(from(t in Task,
+      where: like(t.name, ^search_name) and t.active == true and t.team_id == ^team_id))
+      |> Repo.preload([:team, :user, :task_status,:environment])
+end
+defp not_active_team_task_search(team_id,search_term) do
+  search_name = "%#{search_term}%"
+      Repo.all(from(t in Task,
+      where: like(t.name, ^search_name) and t.active == false  and t.team_id == ^team_id))
+      |> Repo.preload([:team, :user, :task_status,:environment])
+end
+defp open_team_task_search(team_id,search_term) do
+  search_name = "%#{search_term}%"
+      Repo.all(from(t in Task,
+      where: like(t.name, ^search_name) and t.due_date >= ^DateTime.utc_now and t.active == true and t.team_id == ^team_id))
+      |> Repo.preload([:team, :user, :task_status,:environment])
+end
+defp overdue_team_task_search(team_id,search_term) do
+  search_name = "%#{search_term}%"
+      Repo.all(from(t in Task,
+      where: like(t.name, ^search_name) and t.due_date <= ^DateTime.utc_now and t.active == true and t.team_id == ^team_id))
+      |> Repo.preload([:team, :user, :task_status,:environment])
+end
+defp completed_team_task_search(team_id,search_term) do
+  completed_key =%{
+    completed: get_task_status("Completed")
+  }
+  search_name = "%#{search_term}%"
+      Repo.all(from(t in Task,
+      where: like(t.name, ^search_name) and t.task_status_id == ^completed_key.completed and t.active == false and t.team_id == ^team_id))
+      |> Repo.preload([:team, :user, :task_status,:environment])
+end
+
+
 @doc """
 search dev team task
 """
@@ -24,6 +79,63 @@ def user_task_search(team_id, user_id, search_term) do
       where: like(t.name, ^search_name) and t.team_id == ^team_id and t.user_id == ^user_id))
       |> Repo.preload([:team, :user, :task_status,:environment])
 end
+
+def team_user_task_search(team_id,user_id,search_term) do
+  [full_user_search] = [%{
+  all_tasks: all_user_task_search(team_id,user_id,search_term),
+  active_tasks: active_user_task_search(team_id,user_id,search_term),
+  not_active_tasks: not_active_user_task_search(team_id,user_id,search_term),
+  open_tasks: open_user_task_search(team_id,user_id,search_term),
+  over_due_tasks: overdue_user_task_search(team_id,user_id,search_term),
+  completed_tasks: completed_user_task_search(team_id,user_id,search_term)
+  }]
+  full_user_search
+  end
+  
+defp all_user_task_search(team_id,user_id,search_term) do
+  search_name = "%#{search_term}%"
+      Repo.all(from(t in Task,
+      where: like(t.name, ^search_name) and  t.team_id == ^team_id and t.user_id == ^user_id))
+      |> Repo.preload([:team, :user, :task_status,:environment])
+end
+defp active_user_task_search(team_id,user_id,search_term) do
+  search_name = "%#{search_term}%"
+      Repo.all(from(t in Task,
+      where: like(t.name, ^search_name) and t.active == true and t.team_id == ^team_id and t.user_id == ^user_id))
+      |> Repo.preload([:team, :user, :task_status,:environment])
+end
+defp not_active_user_task_search(team_id,user_id,search_term) do
+  search_name = "%#{search_term}%"
+      Repo.all(from(t in Task,
+      where: like(t.name, ^search_name) and t.active == false  and t.team_id == ^team_id and t.user_id == ^user_id))
+      |> Repo.preload([:team, :user, :task_status,:environment])
+end
+defp open_user_task_search(team_id,user_id,search_term) do
+  search_name = "%#{search_term}%"
+      Repo.all(from(t in Task,
+      where: like(t.name, ^search_name) and t.due_date >= ^DateTime.utc_now and t.active == true and t.team_id == ^team_id and t.user_id == ^user_id))
+      |> Repo.preload([:team, :user, :task_status,:environment])
+end
+defp overdue_user_task_search(team_id,user_id,search_term) do
+  search_name = "%#{search_term}%"
+      Repo.all(from(t in Task,
+      where: like(t.name, ^search_name) and t.due_date <= ^DateTime.utc_now and t.active == true and t.team_id == ^team_id and t.user_id == ^user_id))
+      |> Repo.preload([:team, :user, :task_status,:environment])
+end
+defp completed_user_task_search(team_id,user_id,search_term) do
+  completed_key =%{
+    completed: get_task_status("Completed")
+  }
+  search_name = "%#{search_term}%"
+      Repo.all(from(t in Task,
+      where: like(t.name, ^search_name) and t.task_status_id == ^completed_key.completed and t.active == false and t.team_id == ^team_id and t.user_id == ^user_id))
+      |> Repo.preload([:team, :user, :task_status,:environment])
+end
+
+
+
+
+
 
    @doc """
   get task by id

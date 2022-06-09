@@ -2,23 +2,37 @@ defmodule KrystalMathApi.Projects do
     import Ecto.Query, warn: false
     alias KrystalMathApi.Repo
     alias  KrystalMathApi.Projects.{Project,LiveIssue}
-    alias KrystalMathApi.Projects.CategoriesAndImportance.{ProjectType,ProjectCategoryType}
-
+    alias KrystalMathApi.Projects.CategoriesAndImportance.{ProjectType,ProjectCategoryType,Status}
+    alias KrystalMathApi.Operations.Team
 
     # projects context
 
     # Get Project Types
 
-    def get_project_types(project_type)  do
+    defp get_project_types(project_type)  do
       query = from(pt in ProjectType,select: pt.id, where: pt.name == ^project_type)
       Repo.one(query)
     end
        # Get Project Category 
 
-       def get_project_category(project_category)  do
+       defp get_project_category(project_category)  do
         query = from(pt in ProjectCategoryType,select: pt.id, where: pt.name == ^project_category)
         Repo.one(query)
       end
+
+
+           # Get Project Statust 
+
+           defp get_project_status(project_status)  do
+            query = from(s in Status,select: s.id, where: s.name == ^project_status)
+            Repo.one(query)
+          end
+           # Get Team
+
+           defp get_team(team_name)  do
+            query = from(t in Team,select: t.id, where: t.name == ^team_name)
+            Repo.one(query)
+          end
 
 
 
@@ -327,16 +341,23 @@ end
 
 ############# OPERATIONAL PROJETCS ########
     def operational_projects do
-        operation_key = 1
-        all_projects = from(p in Project, order_by: [desc: p.priority_type_id], where: p.project_category_type_id == ^operation_key)
+        project_category =%{
+          operational: get_project_category("Operational")
+        }
+        all_projects = from(p in Project, order_by: [desc: p.priority_type_id], where: p.project_category_type_id == ^project_category.operational)
         Repo.all(all_projects)
         |> Repo.preload([:team, :user, :project_type, :project_category_type, :project_status, :priority_type])
     end
 
-    def unassigned_operational_projects do
-        operation_key = 1
-        team_id = 1
-        all_projects = from(p in Project, order_by: [desc: p.priority_type_id], where: p.project_category_type_id == ^operation_key and p.team_id == ^team_id)
+    def unassigned_operational_projects do   
+        team =%{
+          key: get_team("TBA")
+        }
+        project_category =%{
+          operational: get_project_category("Operational")
+        }
+
+        all_projects = from(p in Project, order_by: [desc: p.priority_type_id], where: p.project_category_type_id == ^project_category.operational and p.team_id == ^team.key)
         Repo.all(all_projects)
         |> Repo.preload([:team, :user, :project_type, :project_category_type, :project_status, :priority_type])
     end
@@ -419,16 +440,23 @@ end
 ########### Strategic Projects #########
     # strategic projects
     def strategic_projects do
-        strategic_key = 2
-        all_projects = from(p in Project, order_by: [desc: p.priority_type_id], where: p.project_category_type_id == ^strategic_key)
+       
+        project_category =%{
+          strategic: get_project_category("Strategic")
+        }
+        all_projects = from(p in Project, order_by: [desc: p.priority_type_id], where: p.project_category_type_id == ^project_category.strategic)
         Repo.all(all_projects)
         |> Repo.preload([:team, :user, :project_type, :project_category_type, :project_status, :priority_type])
     end
 
     def unassigned_strategic_projects do
-        strategic_key = 2
-        team_id = 1
-        all_projects = from(p in Project, order_by: [desc: p.priority_type_id], where: p.project_category_type_id == ^strategic_key and p.team_id == ^team_id)
+        team =%{
+          key: get_team("TBA")
+        }
+        project_category =%{
+          strategic: get_project_category("Strategic")
+        }
+        all_projects = from(p in Project, order_by: [desc: p.priority_type_id], where: p.project_category_type_id == ^project_category.strategic and p.team_id == ^team.key)
         Repo.all(all_projects)
         |> Repo.preload([:team, :user, :project_type, :project_category_type, :project_status, :priority_type])
     end
@@ -500,11 +528,7 @@ end
        }]
      
        team_project
-     end
-    
-    
-  
-     
+     end   
 
   @doc """
     create new project record
@@ -524,6 +548,16 @@ end
         |> Project.changeset(attrs)
         |> Repo.update()
     end
+
+    @doc """
+    team  update project  record
+    """
+
+    def team_update_project(%Project{} = project, attrs) do
+      project
+      |> Project.team_changeset(attrs)
+      |> Repo.update()
+  end
 
 ########### Live Issues ############
 
@@ -545,22 +579,43 @@ end
         end
 
     # search for all  not active projects
-        def all_not_active_live_issues_search(search_term) do
-          completion_key = 8
+        def all_not_active_live_issues_search(search_term) do 
+          project_status = %{  
+            deployed: get_project_status("Deployed") 
+          }
             search_name = "%#{search_term}%"
                 Repo.all(from(p in LiveIssue,
-                where: like(p.name, ^search_name) and p.is_active == false and p.project_status_id != ^completion_key))
+                where: like(p.name, ^search_name) and p.is_active == false and p.project_status_id != ^project_status.deployed))
                 |> Repo.preload([:team, :user, :project_status, :priority_type])
         end
 
     # search for all completed projects
         def all_completed_active_live_issues_search(search_term) do
-          completion_key = 8
+          project_status = %{  
+            deployed: get_project_status("Deployed") 
+          }
             search_name = "%#{search_term}%"
               Repo.all(from(p in LiveIssue,
-              where: like(p.name, ^search_name) and p.is_active == false and p.project_status_id == ^completion_key))
+              where: like(p.name, ^search_name) and p.is_active == false and p.project_status_id == ^project_status.deployed))
             |> Repo.preload([:team, :user, :project_status, :priority_type])
           end
+
+          # All over Live Issues Search 
+
+          def live_issues_search(search_term) do
+            live_issues_all_search = %{
+              all_live_issues: all_live_issues_search(search_term),
+              active_live_issues: all_active_live_issues_search(search_term),
+              not_active_live_issues: all_not_active_live_issues_search(search_term),
+              completed_live_issues: all_completed_active_live_issues_search(search_term)
+            }
+            live_issues_all_search
+          end
+
+
+
+
+
 
 
         # Team Search
@@ -582,20 +637,36 @@ end
   end
     # not active search for projects
     def not_active_team_live_issues_search(team_id, search_term) do
-      completion_key = 8
+      project_status = %{  
+        deployed: get_project_status("Deployed") 
+      }
       search_name = "%#{search_term}%"
           Repo.all(from(p in LiveIssue,
-          where: like(p.name, ^search_name) and p.team_id == ^team_id and p.is_active == false and p.project_status_id != ^completion_key) )
+          where: like(p.name, ^search_name) and p.team_id == ^team_id and p.is_active == false and p.project_status_id != ^project_status.deployed) )
           |> Repo.preload([:team, :user, :project_status, :priority_type])
     end
       # completed search for projects
       def completed_team_live_issues_search(team_id, search_term) do
-        completion_key = 8
+        project_status = %{  
+          deployed: get_project_status("Deployed") 
+        }
         search_name = "%#{search_term}%"
             Repo.all(from(p in LiveIssue,
-            where: like(p.name, ^search_name) and p.team_id == ^team_id and p.is_active == false and p.project_status_id == ^completion_key) )
+            where: like(p.name, ^search_name) and p.team_id == ^team_id and p.is_active == false and p.project_status_id == ^project_status.deployed) )
             |> Repo.preload([:team, :user, :project_status, :priority_type])
       end
+
+                # All over Live Issues Search 
+
+                def team_live_issues_search(team_id,search_term) do
+                  live_issues_all_search = %{
+                    all_live_issues: all_team_live_issues_search(team_id,search_term),
+                    active_live_issues: active_team_live_issues_search(team_id,search_term),
+                    not_active_live_issues: not_active_team_live_issues_search(team_id,search_term),
+                    completed_live_issues: completed_team_live_issues_search(team_id,search_term)
+                  }
+                  live_issues_all_search
+                end
 
 
     # get live issue by Id
@@ -626,21 +697,33 @@ def all_active_live_issues do
 end
 # Get all not active  live issues 
 def all_not_active_live_issues do
-  completion_key = 8
-  all_projects = from(p in LiveIssue, order_by: [desc: p.priority_type_id],where: p.is_active == false and p.project_status_id != ^completion_key)
+  project_status = %{  
+    deployed: get_project_status("Deployed") 
+  }
+  all_projects = from(p in LiveIssue, order_by: [desc: p.priority_type_id],where: p.is_active == false and p.project_status_id != ^project_status.deployed)
   Repo.all(all_projects)
   |> Repo.preload([:team, :user, :project_status, :priority_type])
 end
 
 # Get all comleted active  live issues 
 def all_completed_live_issues do
-  completion_key = 8
-  all_projects = from(p in LiveIssue, order_by: [desc: p.priority_type_id],where: p.is_active == false and p.project_status_id == ^completion_key )
+  project_status = %{  
+    deployed: get_project_status("Deployed") 
+  }
+  all_projects = from(p in LiveIssue, order_by: [desc: p.priority_type_id],where: p.is_active == false and p.project_status_id == ^project_status.deployed )
   Repo.all(all_projects)
   |> Repo.preload([:team, :user, :project_status, :priority_type])
 end
 
-
+def live_issues_overview do
+  live_issues_all = %{
+    all_live_issues: all_live_issues(),
+    active_live_issues: all_active_live_issues(),
+    not_active_live_issues: all_not_active_live_issues(),
+    completed_live_issues: all_completed_live_issues()
+  }
+  live_issues_all
+end
 
 
 
@@ -673,10 +756,23 @@ def all_not_active_team_live_issues(team_id) do
 end
 # Get all comleted active team  live issues 
 def all_completed_team_live_issues(team_id) do
-  completion_key = 8
-  all_projects = from(p in LiveIssue, order_by: [desc: p.priority_type_id],where: p.team_id == ^team_id and p.is_active == false and p.project_status_id == ^completion_key )
+  project_status = %{  
+    deployed: get_project_status("Deployed") 
+  }
+  all_projects = from(p in LiveIssue, order_by: [desc: p.priority_type_id],where: p.team_id == ^team_id and p.is_active == false and p.project_status_id == ^project_status.deployed )
   Repo.all(all_projects)
   |> Repo.preload([:team, :user, :project_status, :priority_type])
+end
+
+# Team Map Live Issues 
+def team_live_issues_overview(team_id) do
+  team_live_issues = %{
+    all_live_issues: all_team_live_issues(team_id),
+    active_live_issues: all_active_team_live_issues(team_id),
+    not_active_live_issues: all_not_active_team_live_issues(team_id),
+    completed_live_issues: all_completed_team_live_issues(team_id)
+  }
+  team_live_issues
 end
 
     @doc """
@@ -725,30 +821,38 @@ def all_projects_counter do
   end
   #   assigend team assigned  counters
   def all_assigned_projects_counter do
-    team_id = 1
+    team =%{
+      key: get_team("TBA")
+    }
     projects = from(p in Project,
-    select: count(p.id), where: p.team_id != ^team_id)
+    select: count(p.id), where: p.team_id != ^team.key)
     Repo.one(projects)
   end
   def all_not_assigned_projects_counter do
-    team_id = 1
+    team =%{
+      key: get_team("TBA")
+    }
     projects = from(p in Project,
-    select: count(p.id), where: p.team_id == ^team_id)
+    select: count(p.id), where: p.team_id == ^team.key)
     Repo.one(projects)
   end
 
   #   completion counters
-  def all_pending_projects_counter do
-    status_id = 8
+  defp all_pending_projects_counter do
+    project_status = %{  
+      deployed: get_project_status("Deployed") 
+    }
     projects = from(p in Project,
-    select: count(p.id), where: p.project_status_id != ^status_id)
+    select: count(p.id), where: p.project_status_id != ^project_status.deployed)
     Repo.one(projects)
   end
   
-  def all_completed_projects_counter do
-    status_id = 8
+  defp all_completed_projects_counter do
+    project_status = %{  
+      deployed: get_project_status("Deployed") 
+    }
     projects = from(p in Project,
-    select: count(p.id), where: p.project_status_id == ^status_id)
+    select: count(p.id), where: p.project_status_id == ^project_status.deployed)
     Repo.one(projects)
   end
   ####@@@@ LATEST @@@@####
@@ -767,8 +871,6 @@ iex> projects_counter(1)
   }
   projects_count
   end
-
-
 
 
   def project_counter_category(category_id) do
@@ -796,145 +898,80 @@ iex> projects_counter(1)
 
 
 
-
-
   # All Project Status Counters
-  def projects_not_started_status do
-    status_key = 1
+  def projects__status(project_status) do
     status = from(p in Project,
-    select:  count(p.project_status_id), where:  p.project_status_id == ^status_key )
+    select:  count(p.project_status_id), where:  p.project_status_id == ^project_status )
     Repo.one(status)
   end
-  def projects_planning_status do
-    status_key = 2
-    status = from(p in Project,
-    select:  count(p.project_status_id), where:  p.project_status_id == ^status_key )
-    Repo.one(status)
-  end
-  def projects_investigation_status do
-    status_key = 3
-    status = from(p in Project,
-    select: count(p.project_status_id), where: p.project_status_id == ^status_key )
-    Repo.one(status)
-  end
-  def projects_hold_status do
-    status_key = 4
-    status = from(p in Project,
-    select:  count(p.project_status_id), where:  p.project_status_id == ^status_key )
-    Repo.one(status)
-  end
-  def projects_progress_status do
-    status_key = 5
-    status = from(p in Project,
-    select: count(p.project_status_id), where:  p.project_status_id == ^status_key )
-    Repo.one(status)
-  end
-  def projects_dev_complete_status do
-    status_key = 6
-    status = from(p in Project,
-    select:  count(p.project_status_id), where:  p.project_status_id == ^status_key )
-    Repo.one(status)
-  end
-  def projects_qa_status do
-    status_key = 7
-    status = from(p in Project,
-    select:  count(p.project_status_id), where:  p.project_status_id == ^status_key)
-    Repo.one(status)
-  end
-  def projects_deployed_status do
-    status_key = 8
-    status = from(p in Project,
-    select: count(p.project_status_id), where:  p.project_status_id == ^status_key )
-    Repo.one(status)
-  end
+
   ####@@@@ LATEST @@@@####
   @doc """
 calls all projects statuses count map the into a single varibale
 iex> projects_statuses(1)
 """
   def projects_statuses() do
-    projects_statuses_count =%{
-      not_started: projects_not_started_status() ,
-      planning: projects_planning_status() ,
-      under_investigation: projects_investigation_status() ,
-      on_hold: projects_hold_status(),
-      in_progress: projects_progress_status(),
-      dev_complete: projects_dev_complete_status() ,
-      qa: projects_qa_status(),
-      deployed: projects_deployed_status()
+    project_status = %{  
+      not_started: get_project_status("Not Started") ,
+      planning: get_project_status("Planning") ,
+      under_investigation: get_project_status("Under Investigation") ,
+      on_hold: get_project_status("On Hold"),
+      in_progress: get_project_status("In Progress"),
+      dev_complete: get_project_status("Dev Completed") ,
+      qa: get_project_status("QA"),
+      deployed: get_project_status("Deployed") 
     }
-    projects_statuses_count
+    projects_statuses =%{
+      not_started: projects__status(project_status.not_started) ,
+      planning: projects__status(project_status.planning) ,
+      under_investigation: projects__status(project_status.under_investigation) ,
+      on_hold: projects__status(project_status.on_hold),
+      in_progress: projects__status(project_status.in_progress),
+      dev_complete: projects__status(project_status.dev_complete) ,
+      qa: projects__status(project_status.qa),
+      deployed: projects__status(project_status.deployed)
+    }
+    projects_statuses
   end
 
 
 
 # Project category Counters (Operational, Stratg)
   
-  def projects_not_started_status_category_type(category_type) do
-    status_key = 1
+  defp projects_status_category_type(project_status, category_type) do
     status = from(p in Project,
-    select: count(p.project_status_id), where:  p.project_status_id == ^status_key and p.project_category_type_id == ^category_type)
+    select: count(p.project_status_id), where:  p.project_status_id == ^project_status and p.project_category_type_id == ^category_type )
     Repo.one(status)
   end
-  def projects_planning_status_category_type(category_type) do
-    status_key = 2
-    status = from(p in Project,
-    select:  count(p.project_status_id), where:  p.project_status_id == ^status_key and p.project_category_type_id == ^category_type)
-    Repo.one(status)
-  end
-  def projects_investigation_status_category_type(category_type) do
-    status_key = 3
-    status = from(p in Project,
-    select:  count(p.project_status_id), where: p.project_status_id == ^status_key and p.project_category_type_id == ^category_type)
-    Repo.one(status)
-  end
-  def projects_hold_status_category_type(category_type) do
-    status_key = 4
-    status = from(p in Project,
-    select: count(p.project_status_id), where:  p.project_status_id == ^status_key and p.project_category_type_id == ^category_type)
-    Repo.one(status)
-  end
-  def projects_progress_status_category_type(category_type) do
-    status_key = 5
-    status = from(p in Project,
-    select:  count(p.project_status_id), where:  p.project_status_id == ^status_key and p.project_category_type_id == ^category_type)
-    Repo.one(status)
-  end
-  def projects_dev_complete_status_category_type(category_type) do
-    status_key = 6
-    status = from(p in Project,
-    select: count(p.project_status_id), where:  p.project_status_id == ^status_key and p.project_category_type_id == ^category_type)
-    Repo.one(status)
-  end
-  def projects_qa_status_category_type(category_type) do
-    status_key = 7
-    status = from(p in Project,
-    select: count(p.project_status_id), where:  p.project_status_id == ^status_key and p.project_status_id == ^category_type)
-    Repo.one(status)
-  end
-  def projects_deployed_status_category_type(category_type) do
-    status_key = 8
-    status = from(p in Project,
-    select: count(p.project_status_id), where:  p.project_status_id == ^status_key and p.project_category_type_id == ^category_type )
-    Repo.one(status)
-  end
+
   ####@@@@ LATEST @@@@####
   @doc """
 calls all projects statuses count map the into a single varibale and filter it by project category
 iex> projects_statuses_category(1)
 """
+
   def projects_statuses_category(category_type) do
-    projects_statuses_category_count =%{
-      not_started: projects_not_started_status_category_type(category_type) ,
-      planning: projects_planning_status_category_type(category_type) ,
-      under_investigation: projects_investigation_status_category_type(category_type) ,
-      on_hold: projects_hold_status_category_type(category_type),
-      in_progress: projects_progress_status_category_type(category_type),
-      dev_complete: projects_dev_complete_status_category_type(category_type) ,
-      qa: projects_qa_status_category_type(category_type),
-      deployed: projects_deployed_status_category_type(category_type)
+    project_status = %{  
+      not_started: get_project_status("Not Started") ,
+      planning: get_project_status("Planning") ,
+      under_investigation: get_project_status("Under Investigation") ,
+      on_hold: get_project_status("On Hold"),
+      in_progress: get_project_status("In Progress"),
+      dev_complete: get_project_status("Dev Completed") ,
+      qa: get_project_status("QA"),
+      deployed: get_project_status("Deployed") 
     }
-    projects_statuses_category_count
+    projects_statuses =%{
+      not_started: projects_status_category_type(project_status.not_started,category_type) ,
+      planning: projects_status_category_type(project_status.planning,category_type) ,
+      under_investigation: projects_status_category_type(project_status.under_investigation,category_type) ,
+      on_hold: projects_status_category_type(project_status.on_hold,category_type),
+      in_progress: projects_status_category_type(project_status.in_progress,category_type),
+      dev_complete: projects_status_category_type(project_status.dev_complete,category_type) ,
+      qa: projects_status_category_type(project_status.qa,category_type),
+      deployed: projects_status_category_type(project_status.deployed,category_type)
+    }
+    projects_statuses
   end
 
   def overview_projects_statuses do
@@ -942,29 +979,37 @@ iex> projects_statuses_category(1)
       strategic: get_project_category("Strategic"),
       operational: get_project_category("Operational")
     }
-
+    project_status = %{  
+      not_started: get_project_status("Not Started") ,
+      planning: get_project_status("Planning") ,
+      under_investigation: get_project_status("Under Investigation") ,
+      on_hold: get_project_status("On Hold"),
+      in_progress: get_project_status("In Progress"),
+      dev_complete: get_project_status("Dev Completed") ,
+      qa: get_project_status("QA"),
+      deployed: get_project_status("Deployed") 
+    }
 
     projects_statuses_category_count =%{ operational: %{
-          not_started: projects_not_started_status_category_type(project_category.operational) ,
-          planning: projects_planning_status_category_type(project_category.operational) ,
-          under_investigation: projects_investigation_status_category_type(project_category.operational) ,
-          on_hold: projects_hold_status_category_type(project_category.operational),
-          in_progress: projects_progress_status_category_type(project_category.operational),
-          dev_complete: projects_dev_complete_status_category_type(project_category.operational) ,
-          qa: projects_qa_status_category_type(project_category.operational),
-          deployed: projects_deployed_status_category_type(project_category.operational)
+          not_started: projects_status_category_type(project_status.not_started,project_category.operational) ,
+          planning: projects_status_category_type(project_status.planning,project_category.operational) ,
+          under_investigation: projects_status_category_type(project_status.under_investigation,project_category.operational) ,
+          on_hold: projects_status_category_type(project_status.on_hold,project_category.operational),
+          in_progress: projects_status_category_type(project_status.in_progress,project_category.operational),
+          dev_complete: projects_status_category_type(project_status.dev_complete,project_category.operational) ,
+          qa: projects_status_category_type(project_status.qa,project_category.operational),
+          deployed: projects_status_category_type(project_status.deployed,project_category.operational)
     },
     strategic: %{
-      not_started: projects_not_started_status_category_type(project_category.strategic) ,
-      planning: projects_planning_status_category_type(project_category.strategic) ,
-      under_investigation: projects_investigation_status_category_type(project_category.strategic) ,
-      on_hold: projects_hold_status_category_type(project_category.strategic),
-      in_progress: projects_progress_status_category_type(project_category.strategic),
-      dev_complete: projects_dev_complete_status_category_type(project_category.strategic) ,
-      qa: projects_qa_status_category_type(project_category.strategic),
-      deployed: projects_deployed_status_category_type(project_category.strategic)
-    }
-     
+      not_started: projects_status_category_type(project_status.not_started,project_category.strategic) ,
+      planning: projects_status_category_type(project_status.planning,project_category.strategic) ,
+      under_investigation: projects_status_category_type(project_status.under_investigation,project_category.strategic) ,
+      on_hold: projects_status_category_type(project_status.on_hold,project_category.strategic),
+      in_progress: projects_status_category_type(project_status.in_progress,project_category.strategic),
+      dev_complete: projects_status_category_type(project_status.dev_complete,project_category.strategic) ,
+      qa: projects_status_category_type(project_status.qa,project_category.strategic),
+      deployed: projects_status_category_type(project_status.deployed,project_category.strategic)
+    } 
     }
     projects_statuses_category_count
   end
@@ -980,18 +1025,22 @@ def team_projects_counter_all(team_id) do
   end
   
   # Completed Team Projects
-  def team_completed_projects_counter(team_id) do
-    status_key = 8
+  defp team_completed_projects_counter(team_id) do
+    project_status = %{  
+      deployed: get_project_status("Deployed") 
+    }
     projects = from(p in Project,
-    select: count(p.id), where: p.team_id == ^team_id and p.project_status_id == ^status_key )
+    select: count(p.id), where: p.team_id == ^team_id and p.project_status_id == ^project_status.deployed )
     Repo.one(projects)
   end
 
   # Pending completion
-  def team_pending_projects_counter(team_id) do
-    status_key = 8
+  defp team_pending_projects_counter(team_id) do
+    project_status = %{  
+      deployed: get_project_status("Deployed") 
+    }
     projects = from(p in Project,
-    select: count(p.id), where: p.team_id == ^team_id and p.project_status_id != ^status_key )
+    select: count(p.id), where: p.team_id == ^team_id and p.project_status_id != ^project_status.deployed )
     Repo.one(projects)
   end
 
@@ -1015,17 +1064,21 @@ def team_projects_counter_all(team_id) do
   
   # Completed Team Projects
   def team_completed_projects_category_counter(team_id, category_id) do
-    status_key = 8
+    project_status = %{  
+      deployed: get_project_status("Deployed") 
+    }
     projects = from(p in Project,
-    select: count(p.id), where: p.team_id == ^team_id and p.project_category_type_id == ^category_id  and p.project_status_id == ^status_key )
+    select: count(p.id), where: p.team_id == ^team_id and p.project_category_type_id == ^category_id  and p.project_status_id == ^project_status.deployed )
     Repo.one(projects)
   end
 
   # Pending completion
   def team_pending_projects_category_counter(team_id, category_id) do
-    status_key = 8
+    project_status = %{  
+      deployed: get_project_status("Deployed") 
+    }
     projects = from(p in Project,
-    select: count(p.id), where: p.team_id == ^team_id and p.project_category_type_id == ^category_id and p.project_status_id != ^status_key )
+    select: count(p.id), where: p.team_id == ^team_id and p.project_category_type_id == ^category_id and p.project_status_id != ^project_status.deployed )
     Repo.one(projects)
   end
    ####@@@@ LATEST @@@@####
@@ -1045,131 +1098,68 @@ end
 
 
 #  All Team Project Status Counters
-  def team_projects_not_started_status_category_type(team_id,category_type) do
-    status_key = 1
+
+
+  defp team_projects_status_category_type(team_id,project_status, category_type) do
     status = from(p in Project,
-    select: count(p.project_status_id), where:  p.project_status_id == ^status_key and p.team_id == ^team_id and p.project_category_type_id == ^category_type)
-    Repo.one(status)
-  end
-  def team_projects_planning_status_category_type(team_id, category_type) do
-  
-    status_key = 2
-    status = from(p in Project,
-    select: count(p.project_status_id), where:  p.project_status_id == ^status_key and p.team_id == ^team_id and p.project_category_type_id == ^category_type)
-    Repo.one(status)
-  end
-  def team_projects_investigation_status_category_type(team_id, category_type) do
-    status_key = 3
-    status = from(p in Project,
-    select: count(p.project_status_id), where: p.project_status_id == ^status_key and p.team_id == ^team_id and p.project_category_type_id == ^category_type)
-    Repo.one(status)
-  end
-  def team_projects_hold_status_category_type(team_id, category_type) do
-    status_key = 4
-    status = from(p in Project,
-    select: count(p.project_status_id), where:  p.project_status_id == ^status_key and p.team_id == ^team_id and p.project_category_type_id == ^category_type)
-    Repo.one(status)
-  end
-  def team_projects_progress_status_category_type(team_id, category_type) do
-    status_key = 5
-    status = from(p in Project,
-    select: count(p.project_status_id), where:  p.project_status_id == ^status_key and p.team_id == ^team_id and p.project_category_type_id == ^category_type)
-    Repo.one(status)
-  end
-  def team_projects_dev_complete_status_category_type(team_id, category_type) do
-    status_key = 6
-    status = from(p in Project,
-    select:  count(p.project_status_id), where:  p.project_status_id == ^status_key and p.team_id == ^team_id and p.project_category_type_id == ^category_type)
-    Repo.one(status)
-  end
-  def team_projects_qa_status_category_type(team_id, category_type) do
-    status_key = 7
-    status = from(p in Project,
-    select:  count(p.project_status_id), where:  p.project_status_id == ^status_key and p.team_id == ^team_id and p.project_category_type_id == ^category_type)
-    Repo.one(status)
-  end
-  def team_projects_deployed_status_category_type(team_id, category_type) do
-    status_key = 8
-    status = from(p in Project,
-    select:  count(p.project_status_id), where:  p.project_status_id == ^status_key and p.team_id == ^team_id and p.project_category_type_id == ^category_type )
+    select:  count(p.project_status_id), where:  p.project_status_id == ^project_status and p.team_id == ^team_id and p.project_category_type_id == ^category_type )
     Repo.one(status)
   end
 
 
  def team_project_category_status_count(team_id, category_type) do 
+  project_status = %{  
+    not_started: get_project_status("Not Started") ,
+    planning: get_project_status("Planning") ,
+    under_investigation: get_project_status("Under Investigation") ,
+    on_hold: get_project_status("On Hold"),
+    in_progress: get_project_status("In Progress"),
+    dev_complete: get_project_status("Dev Completed") ,
+    qa: get_project_status("QA"),
+    deployed: get_project_status("Deployed") 
+  }
   team_projects_category_statuses_count =%{
-    not_started: team_projects_not_started_status_category_type(team_id,category_type) ,
-    planning: team_projects_planning_status_category_type(team_id,category_type) ,
-    under_investigation: team_projects_investigation_status_category_type(team_id,category_type) ,
-    on_hold: team_projects_hold_status_category_type(team_id,category_type),
-    in_progress: team_projects_progress_status_category_type(team_id,category_type),
-    dev_complete: team_projects_dev_complete_status_category_type(team_id,category_type) ,
-    qa: team_projects_qa_status_category_type(team_id,category_type),
-    deployed: team_projects_deployed_status_category_type(team_id,category_type)
+    not_started: team_projects_status_category_type(team_id,project_status.not_started, category_type) ,
+    planning: team_projects_status_category_type(team_id,project_status.planning, category_type) ,
+    under_investigation: team_projects_status_category_type(team_id,project_status.under_investigation, category_type) ,
+    on_hold: team_projects_status_category_type(team_id,project_status.on_hold, category_type),
+    in_progress: team_projects_status_category_type(team_id,project_status.in_progress, category_type),
+    dev_complete: team_projects_status_category_type(team_id,project_status.dev_complete, category_type) ,
+    qa: team_projects_status_category_type(team_id,project_status.qa, category_type),
+    deployed: team_projects_status_category_type(team_id,project_status.deployed, category_type)
   }
   team_projects_category_statuses_count
  end
 
   # Team overview Counts
-  def team_overview_projects_not_started(team_id) do
-    status_key = 1
+  defp team_overview_projects_statuse(project_status,team_id) do
     status = from(p in Project,
-    select: count(p.project_status_id), where:  p.project_status_id == ^status_key and p.team_id == ^team_id)
+    select: count(p.project_status_id), where:  p.project_status_id == ^project_status and p.team_id == ^team_id)
     Repo.one(status)
   end
-  def team_overview_projects_planning(team_id) do
-  
-    status_key = 2
-    status = from(p in Project,
-    select:  count(p.project_status_id), where:  p.project_status_id == ^status_key and p.team_id == ^team_id )
-    Repo.one(status)
-  end
-  def team_overview_projects_investigation(team_id) do
-    status_key = 3
-    status = from(p in Project,
-    select:  count(p.project_status_id), where: p.project_status_id == ^status_key and p.team_id == ^team_id )
-    Repo.one(status)
-  end
-  def team_overview_projects_hold(team_id) do
-    status_key = 4
-    status = from(p in Project,
-    select: count(p.project_status_id), where:  p.project_status_id == ^status_key and p.team_id == ^team_id )
-    Repo.one(status)
-  end
-  def team_overview_projects_progress(team_id) do
-    status_key = 5
-    status = from(p in Project,
-    select:  count(p.project_status_id), where:  p.project_status_id == ^status_key and p.team_id == ^team_id )
-    Repo.one(status)
-  end
-  def team_overview_projects_dev_complete(team_id) do
-    status_key = 6
-    status = from(p in Project,
-    select:  count(p.project_status_id), where:  p.project_status_id == ^status_key and p.team_id == ^team_id )
-    Repo.one(status)
-  end
-  def team_overview_projects_qa(team_id) do
-    status_key = 7
-    status = from(p in Project,
-    select:  count(p.project_status_id), where:  p.project_status_id == ^status_key and p.team_id == ^team_id )
-    Repo.one(status)
-  end
-  def team_overview_projects_deployed(team_id) do
-    status_key = 8
-    status = from(p in Project,
-    select:  count(p.project_status_id), where:  p.project_status_id == ^status_key and p.team_id == ^team_id )
-    Repo.one(status)
-  end
+
+
   def team_project_status_count(team_id) do 
+    project_status = %{  
+      not_started: get_project_status("Not Started") ,
+      planning: get_project_status("Planning") ,
+      under_investigation: get_project_status("Under Investigation") ,
+      on_hold: get_project_status("On Hold"),
+      in_progress: get_project_status("In Progress"),
+      dev_complete: get_project_status("Dev Completed") ,
+      qa: get_project_status("QA"),
+      deployed: get_project_status("Deployed") 
+    }
+
     team_projects_statuses_count =%{
-      not_started: team_overview_projects_not_started(team_id) ,
-      planning: team_overview_projects_planning(team_id) ,
-      under_investigation: team_overview_projects_investigation(team_id) ,
-      on_hold: team_overview_projects_hold(team_id),
-      in_progress: team_overview_projects_progress(team_id),
-      dev_complete: team_overview_projects_dev_complete(team_id) ,
-      qa: team_overview_projects_qa(team_id),
-      deployed: team_overview_projects_deployed(team_id)
+      not_started: team_overview_projects_statuse(project_status.not_started,team_id) ,
+      planning: team_overview_projects_statuse(project_status.planning,team_id) ,
+      under_investigation: team_overview_projects_statuse(project_status.under_investigation,team_id) ,
+      on_hold: team_overview_projects_statuse(project_status.on_hold,team_id),
+      in_progress: team_overview_projects_statuse(project_status.in_progress,team_id),
+      dev_complete: team_overview_projects_statuse(project_status.dev_complete,team_id) ,
+      qa: team_overview_projects_statuse(project_status.qa,team_id),
+      deployed: team_overview_projects_statuse(project_status.deployed,team_id)
     }
     team_projects_statuses_count
   end
@@ -1181,17 +1171,21 @@ end
 
     #  Team Live Issue Projects Overview
     def active_live_issues do
-      status_key = 8
+      project_status = %{  
+        deployed: get_project_status("Deployed") 
+      }
       live_issue = from(p in LiveIssue,
-      select: count(p.id), where: p.project_status_id != ^status_key and p.is_active == true)
+      select: count(p.id), where: p.project_status_id != ^project_status.deployed and p.is_active == true)
       Repo.one(live_issue)
     end
 
   # Completed Team Live Projects
   def completed_live_issues do
-    status_key = 8
+    project_status = %{  
+      deployed: get_project_status("Deployed") 
+    }
     projects = from(p in LiveIssue,
-    select: count(p.id), where:  p.project_status_id == ^status_key and p.is_active == false)
+    select: count(p.id), where:  p.project_status_id == ^project_status.deployed and p.is_active == false)
     Repo.one(projects)
   end
 
@@ -1202,9 +1196,11 @@ end
   end
   # Pending completion
   def pending_live_issues do
-    status_key = 8
+    project_status = %{  
+      deployed: get_project_status("Deployed") 
+    }
     projects = from(p in LiveIssue,
-    select: count(p.id), where:  p.project_status_id != ^status_key and p.is_active == true )
+    select: count(p.id), where:  p.project_status_id != ^project_status.deployed and p.is_active == true )
     Repo.one(projects)
   end
 
@@ -1222,53 +1218,10 @@ end
 
 
   # All Project Status Counters
-  def live_issue_not_started_status do
-    status_key = 1
+
+  defp live_issue_status(live_status) do
     status = from(p in LiveIssue,
-    select:  count(p.project_status_id), where:  p.project_status_id == ^status_key )
-    Repo.one(status)
-  end
-  def live_issue_planning_status do
-  
-    status_key = 2
-    status = from(p in LiveIssue,
-    select:  count(p.project_status_id), where:  p.project_status_id == ^status_key )
-    Repo.one(status)
-  end
-  def live_issue_investigation_status do
-    status_key = 3
-    status = from(p in LiveIssue,
-    select: count(p.project_status_id), where: p.project_status_id == ^status_key )
-    Repo.one(status)
-  end
-  def live_issue_hold_status do
-    status_key = 4
-    status = from(p in LiveIssue,
-    select:  count(p.project_status_id), where:  p.project_status_id == ^status_key )
-    Repo.one(status)
-  end
-  def live_issue_progress_status do
-    status_key = 5
-    status = from(p in LiveIssue,
-    select: count(p.project_status_id), where:  p.project_status_id == ^status_key )
-    Repo.one(status)
-  end
-  def live_issue_dev_complete_status do
-    status_key = 6
-    status = from(p in LiveIssue,
-    select:  count(p.project_status_id), where:  p.project_status_id == ^status_key )
-    Repo.one(status)
-  end
-  def live_issue_qa_status do
-    status_key = 7
-    status = from(p in LiveIssue,
-    select:  count(p.project_status_id), where:  p.project_status_id == ^status_key)
-    Repo.one(status)
-  end
-  def live_issue_deployed_status do
-    status_key = 8
-    status = from(p in LiveIssue,
-    select: count(p.project_status_id), where:  p.project_status_id == ^status_key )
+    select: count(p.project_status_id), where:  p.project_status_id == ^live_status )
     Repo.one(status)
   end
   ####@@@@ LATEST @@@@####
@@ -1277,126 +1230,117 @@ calls all live_issue statuses count map the into a single varibale
 iex> live_issue_statuses(1)
 """
   def live_issue_statuses() do
+    project_status = %{  
+      not_started: get_project_status("Not Started") ,
+      planning: get_project_status("Planning") ,
+      under_investigation: get_project_status("Under Investigation") ,
+      on_hold: get_project_status("On Hold"),
+      in_progress: get_project_status("In Progress"),
+      dev_complete: get_project_status("Dev Completed") ,
+      qa: get_project_status("QA"),
+      deployed: get_project_status("Deployed") 
+    }
     live_issue_statuses_count =%{
-      not_started: live_issue_not_started_status() ,
-      planning: live_issue_planning_status() ,
-      under_investigation: live_issue_investigation_status() ,
-      on_hold: live_issue_hold_status(),
-      in_progress: live_issue_progress_status(),
-      dev_complete: live_issue_dev_complete_status() ,
-      qa: live_issue_qa_status(),
-      deployed: live_issue_deployed_status()
+      not_started: live_issue_status(project_status.not_started) ,
+      planning: live_issue_status(project_status.planning) ,
+      under_investigation: live_issue_status( project_status.under_investigation) ,
+      on_hold: live_issue_status(project_status.on_hold),
+      in_progress: live_issue_status(project_status.in_progress),
+      dev_complete: live_issue_status(project_status.dev_complete) ,
+      qa: live_issue_status(project_status.qa),
+      deployed: live_issue_status(project_status.deployed)
     }
     live_issue_statuses_count
   end
-
-
+  
 
 # TEAM
 
 
     #  Team Live Issue Projects Overview
-    def active_team_live_issues(team_id) do
-      status_key = 8
+    defp active_team_live_issues(team_id) do
+      project_status = %{  
+        deployed: get_project_status("Deployed") 
+      }
       live_issue = from(p in LiveIssue,
-      select: count(p.id), where: p.team_id == ^team_id and p.project_status_id != ^status_key and p.is_active == true)
+      select: count(p.id), where: p.team_id == ^team_id and p.project_status_id != ^project_status.deployed and p.is_active == true)
       Repo.one(live_issue)
     end
 
   # Completed Team Live Projects
-  def team_completed_live_issues(team_id) do
-    status_key = 8
+  defp team_completed_live_issues(team_id) do
+    project_status = %{  
+      deployed: get_project_status("Deployed") 
+    }
     projects = from(p in LiveIssue,
-    select: count(p.id), where: p.team_id == ^team_id and p.project_status_id == ^status_key and p.is_active == false)
+    select: count(p.id), where: p.team_id == ^team_id and p.project_status_id == ^project_status.deployed and p.is_active == false)
     Repo.one(projects)
   end
 
-  def team_all_live_issues(team_id) do
+  defp team_all_live_issues(team_id) do
     live_issue = from(p in LiveIssue,
     select: count(p.id), where: p.team_id == ^team_id  )
     Repo.one(live_issue)
   end
   # Pending completion
-  def team_pending_live_issues(team_id) do
-    status_key = 8
+  defp team_pending_live_issues(team_id) do
+    project_status = %{  
+      deployed: get_project_status("Deployed") 
+    }
     projects = from(p in LiveIssue,
-    select: count(p.id), where: p.team_id == ^team_id and p.project_status_id != ^status_key and p.is_active == true )
+    select: count(p.id), where: p.team_id == ^team_id and p.project_status_id != ^project_status.deployed and p.is_active == true )
     Repo.one(projects)
   end
 
   def team_live_issues_count(team_id) do 
-    team_live_issues_count =%{
+    team_live_issues_counters =%{
       completed: team_completed_live_issues(team_id) ,
       pending: team_pending_live_issues(team_id) ,
       all_project: team_all_live_issues(team_id),
       active:  active_team_live_issues(team_id)
     }
-    team_live_issues_count
+    team_live_issues_counters
   end
 
   # Team Live Issues Status overview Counts
-  def team_live_issues_not_started(team_id) do
-    status_key = 1
+
+  defp team_live_issues_statuses(live_statsus,team_id) do
     status = from(p in LiveIssue,
-    select: count(p.project_status_id), where:  p.project_status_id == ^status_key and p.team_id == ^team_id)
-    Repo.one(status)
-  end
-  def team_live_issues_planning(team_id) do
-  
-    status_key = 2
-    status = from(p in LiveIssue,
-    select:  count(p.project_status_id), where:  p.project_status_id == ^status_key and p.team_id == ^team_id )
-    Repo.one(status)
-  end
-  def team_live_issues_investigation(team_id) do
-    status_key = 3
-    status = from(p in LiveIssue,
-    select:  count(p.project_status_id), where: p.project_status_id == ^status_key and p.team_id == ^team_id )
-    Repo.one(status)
-  end
-  def team_live_issues_hold(team_id) do
-    status_key = 4
-    status = from(p in LiveIssue,
-    select: count(p.project_status_id), where:  p.project_status_id == ^status_key and p.team_id == ^team_id )
-    Repo.one(status)
-  end
-  def team_live_issues_progress(team_id) do
-    status_key = 5
-    status = from(p in LiveIssue,
-    select:  count(p.project_status_id), where:  p.project_status_id == ^status_key and p.team_id == ^team_id )
-    Repo.one(status)
-  end
-  def team_live_issues_dev_complete(team_id) do
-    status_key = 6
-    status = from(p in LiveIssue,
-    select:  count(p.project_status_id), where:  p.project_status_id == ^status_key and p.team_id == ^team_id )
-    Repo.one(status)
-  end
-  def team_live_issues_qa(team_id) do
-    status_key = 7
-    status = from(p in LiveIssue,
-    select:  count(p.project_status_id), where:  p.project_status_id == ^status_key and p.team_id == ^team_id )
-    Repo.one(status)
-  end
-  def team_live_issues_deployed(team_id) do
-    status_key = 8
-    status = from(p in LiveIssue,
-    select:  count(p.project_status_id), where:  p.project_status_id == ^status_key and p.team_id == ^team_id )
+    select:  count(p.project_status_id), where:  p.project_status_id == ^live_statsus and p.team_id == ^team_id )
     Repo.one(status)
   end
 
   def team_live_issues_status_count(team_id) do 
+
+    project_status = %{  
+      not_started: get_project_status("Not Started") ,
+      planning: get_project_status("Planning") ,
+      under_investigation: get_project_status("Under Investigation") ,
+      on_hold: get_project_status("On Hold"),
+      in_progress: get_project_status("In Progress"),
+      dev_complete: get_project_status("Dev Completed") ,
+      qa: get_project_status("QA"),
+      deployed: get_project_status("Deployed") 
+    }
     team_live_statuses_count =%{
-      not_started: team_live_issues_not_started(team_id) ,
-      planning: team_live_issues_planning(team_id) ,
-      under_investigation: team_live_issues_investigation(team_id) ,
-      on_hold: team_live_issues_hold(team_id),
-      in_progress: team_live_issues_progress(team_id),
-      dev_complete: team_live_issues_dev_complete(team_id) ,
-      qa: team_live_issues_qa(team_id),
-      deployed: team_live_issues_deployed(team_id)
+      not_started: team_live_issues_statuses(project_status.not_started,team_id) ,
+      planning: team_live_issues_statuses(project_status.planning,team_id) ,
+      under_investigation: team_live_issues_statuses(project_status.under_investigation,team_id) ,
+      on_hold: team_live_issues_statuses( project_status.on_hold,team_id),
+      in_progress: team_live_issues_statuses(project_status.in_progress,team_id),
+      dev_complete: team_live_issues_statuses(project_status.dev_complete,team_id) ,
+      qa: team_live_issues_statuses(project_status.qa,team_id),
+      deployed: team_live_issues_statuses(project_status.deployed,team_id)
     }
     team_live_statuses_count
   end
-
+  
+  
+  
+ 
+  
+  
+  
+  
+      
 end

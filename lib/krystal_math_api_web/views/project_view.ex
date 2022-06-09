@@ -275,6 +275,15 @@ end
           }
         end
 
+        def render("live_overview.json", %{live_issue: live_issue}) do
+          %{
+            all_live_issues: render_many(live_issue.all_live_issues, LiveIssueView, "live_issue_details.json"),
+            active_live_issues: render_many(live_issue.active_live_issues, LiveIssueView, "live_issue_details.json"),
+            not_active_live_issues: render_many(live_issue.not_active_live_issues, LiveIssueView, "live_issue_details.json"),
+            completed_live_issues: render_many(live_issue.completed_live_issues, LiveIssueView, "live_issue_details.json")
+           }
+         end
+
 # Project Counter View
         def render("index.json", %{counters: counters}) do
           %{

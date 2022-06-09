@@ -47,8 +47,15 @@ defmodule KrystalMathApiWeb.LiveIssueView do
         updated_at: live_issue.updated_at
       }
     end
-  
 
+    def render("live_overview.json", %{live_issue: live_issue}) do
+      %{
+        all_live_issues: render_many(live_issue.all_live_issues, LiveIssueView, "live_issue_details.json"),
+        active_live_issues: render_many(live_issue.active_live_issues, LiveIssueView, "live_issue_details.json"),
+        not_active_live_issues: render_many(live_issue.not_active_live_issues, LiveIssueView, "live_issue_details.json"),
+        completed_live_issues: render_many(live_issue.completed_live_issues, LiveIssueView, "live_issue_details.json")
+       }
+     end
 # Priority View
 
     def render("index.json", %{priority_types: priority_types}) do

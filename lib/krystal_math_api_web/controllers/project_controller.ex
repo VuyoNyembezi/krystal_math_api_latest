@@ -166,8 +166,6 @@ def team_strategic_project_types(conn, %{"team_id" => team_id}) do
   render(conn,"project_overview.json", project: project)
 end
 
-
-
 # Create New Record
 
 def create_new_project(conn, %{"project" => project_params}) do
@@ -177,6 +175,7 @@ def create_new_project(conn, %{"project" => project_params}) do
       |> render("project.json", project: project)
     end
 end
+
 # Update Project Record
 
 def update_project(conn, %{"id" => id, "project"=> project_params}) do
@@ -184,6 +183,15 @@ def update_project(conn, %{"id" => id, "project"=> project_params}) do
     with {:ok, %Project{} = project} <- Projects.update_project(project, project_params ) do
       render(conn, "show.json", project: project)
     end
+end
+
+# Team Update Project Record
+
+def team_update_projects(conn, %{"id" => id, "project"=> project_params}) do
+  project = Projects.get_project!(id)
+  with {:ok, %Project{} = project} <- Projects.team_update_project(project, project_params ) do
+    render(conn, "show.json", project: project)
+  end
 end
 
 ########### Live Issues ############
@@ -211,6 +219,11 @@ def completed_live_issuses_search(conn, %{"search" => search_term}) do
   render(conn, "index.json", live_issues: live_issues )
 end
 
+def all_live_issues_search(conn, %{"search" => search_term}) do
+  live_issue = Projects.live_issues_search(search_term)
+  render(conn,"live_overview.json", live_issue: live_issue)
+end
+
 
 
 # search team live issues
@@ -234,6 +247,10 @@ def completed_team_live_issuses_search(conn, %{"team_id" => team_id,"search" => 
   render(conn, "index.json", live_issues: live_issues )
 end
 
+def team_live_issues_search(conn, %{"team_id" => team_id,"search" => search_term}) do
+  live_issue = Projects.team_live_issues_search(team_id,search_term)
+  render(conn,"live_overview.json", live_issue: live_issue)
+end
 
 
 
@@ -263,7 +280,15 @@ def get_not_active_live_issuses(conn, _params) do
 def get_completed_live_issuses(conn, _params) do
   live_issues = Projects.all_completed_live_issues()
   render(conn, "index.json", live_issues: live_issues )
-  end
+end
+
+
+def all_live_issues_overview(conn, _params) do
+  live_issue = Projects.live_issues_overview()
+  render(conn,"live_overview.json", live_issue: live_issue)
+end
+
+
 
 
 
@@ -301,6 +326,12 @@ end
     live_issues = Projects.all_completed_team_live_issues(team_id)
     render(conn, "index.json", live_issues: live_issues )
   end
+
+  
+def team_live_issues_overview(conn, %{"team_id" => team_id}) do
+  live_issue = Projects.team_live_issues_overview(team_id)
+  render(conn,"live_overview.json", live_issue: live_issue)
+end
 
   # Create New Record
 

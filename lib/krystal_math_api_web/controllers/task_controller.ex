@@ -14,7 +14,19 @@ def user_tasks_search(conn, %{"team_id" => team_id,"user_id" => user_id,"search"
   tasks = TaskOperations.user_task_search(team_id, user_id,search_term)
   render(conn,"index.json", tasks: tasks)
 end
+# Team Search Project Map(Overdue , Active, Not Active, Completed , All)
+      
+    def team_search_tasks(conn, %{"team_id" => team_id,"search" => search_term}) do
+        task_overview = TaskOperations.team_search(team_id,search_term)
+        render(conn,"task_overview.json", task_overview: task_overview)
+    end
 
+    # User Search Project Map(Overdue , Active, Not Active, Completed , All)
+      
+    def user_search_tasks(conn, %{"team_id" => team_id,"user_id" => user_id,"search" => search_term}) do
+      task_overview = TaskOperations.team_user_task_search(team_id,user_id,search_term)
+      render(conn,"task_overview.json", task_overview: task_overview)
+  end
 # get all tasks
 def get_tasks(conn, _params) do
     tasks = TaskOperations.list_all_tasks()
