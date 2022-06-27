@@ -148,7 +148,6 @@ defmodule KrystalMathApi.Projects do
   end
 
 
-
     # Map Team Search For Strategic  
     def team_strategic_project_search(team_id, search_term) do
      project_category =%{
@@ -257,12 +256,48 @@ end
         |> Repo.preload([:team, :user, :project_type, :project_category_type, :project_status, :priority_type])
     end
 
+      # Strategic and operational projects
+      defp team_projects_category(category_type, team_id) do
+        project_category =%{
+          strategic: get_project_category("Strategic")
+        }
+        all_projects = from(p in Project, order_by: [desc: p.priority_type_id], where: p.project_category_type_id == ^category_type and p.team_id == ^team_id)
+        Repo.all(all_projects)
+        |> Repo.preload([:team, :user, :project_type, :project_category_type, :project_status, :priority_type])
+    end
+        # Strategic team projects 
+        defp team_strategic_all_projects(team_id) do
+          project_category =%{
+            strategic: get_project_category("Strategic")
+          }
+          all_projects = from(p in Project, order_by: [desc: p.priority_type_id], where: p.project_category_type_id == ^project_category.strategic and p.team_id == ^team_id)
+          Repo.all(all_projects)
+          |> Repo.preload([:team, :user, :project_type, :project_category_type, :project_status, :priority_type])
+      end
+           # Operational Team Projects 
+           defp team_operational_all_projects(team_id) do
+            project_category =%{
+              operational: get_project_category("Operational")
+            }
+            all_projects = from(p in Project, order_by: [desc: p.priority_type_id], where: p.project_category_type_id == ^project_category.operational and p.team_id == ^team_id)
+            Repo.all(all_projects)
+            |> Repo.preload([:team, :user, :project_type, :project_category_type, :project_status, :priority_type])
+        end
+  
+
+
      # Team project by project type
      def get_team_projects_type(team_id, project_type) do
       all_projects = from(p in Project, order_by: [desc: p.priority_type_id], where: p.project_type_id == ^project_type and p.team_id == ^team_id)
       Repo.all(all_projects)
       |> Repo.preload([:team, :user, :project_type, :project_category_type, :project_status, :priority_type])
      end
+          # Team projects
+          defp get_team_projects(team_id) do
+            all_projects = from(p in Project, order_by: [desc: p.priority_type_id], where:  p.team_id == ^team_id)
+            Repo.all(all_projects)
+            |> Repo.preload([:team, :user, :project_type, :project_category_type, :project_status, :priority_type])
+           end
 
      def get_all_team_projects_type(team_id) do
       project_types =%{
@@ -281,7 +316,8 @@ end
          integrations_projects: get_team_projects_type(team_id , project_types.integrations),
          payment_method_projects: get_team_projects_type(team_id , project_types.payment_methods),
          digital_marketing_projects: get_team_projects_type(team_id , project_types.digital_marketing),
-         bet_project_partners_projects: get_team_projects_type(team_id , project_types.bet_project_partners)
+         bet_project_partners_projects: get_team_projects_type(team_id , project_types.bet_project_partners),
+         all_projects: get_team_projects(team_id)
        }]
      
        team_project
@@ -318,7 +354,8 @@ end
       integrations_projects: team_projects_category_project_type(team_id,project_category.operational , project_types.integrations),
       payment_method_projects: team_projects_category_project_type(team_id,project_category.operational , project_types.payment_methods),
       digital_marketing_projects: team_projects_category_project_type(team_id,project_category.operational , project_types.digital_marketing),
-      bet_project_partners_projects: team_projects_category_project_type(team_id,project_category.operational , project_types.bet_project_partners)
+      bet_project_partners_projects: team_projects_category_project_type(team_id,project_category.operational , project_types.bet_project_partners),
+      all_projects: team_projects_category(project_category.operational, team_id)
      },
      strategic_team_projects: %{
       bet_projects: team_projects_category_project_type(team_id,project_category.strategic ,project_types.bet_project),
@@ -327,7 +364,8 @@ end
       integrations_projects: team_projects_category_project_type(team_id,project_category.strategic , project_types.integrations),
       payment_method_projects: team_projects_category_project_type(team_id,project_category.strategic , project_types.payment_methods),
       digital_marketing_projects: team_projects_category_project_type(team_id,project_category.strategic , project_types.digital_marketing),
-      bet_project_partners_projects: team_projects_category_project_type(team_id,project_category.strategic , project_types.bet_project_partners)
+      bet_project_partners_projects: team_projects_category_project_type(team_id,project_category.strategic , project_types.bet_project_partners),
+      all_projects: team_projects_category(project_category.strategic, team_id)
      }
      
      }
@@ -367,6 +405,11 @@ end
         Repo.all(all_projects)
         |> Repo.preload([:team, :user, :project_type, :project_category_type, :project_status, :priority_type])
     end
+    defp operational_projects(project_category) do
+      all_projects = from(p in Project, order_by: [desc: p.priority_type_id], where: p.project_category_type_id == ^project_category )
+      Repo.all(all_projects)
+      |> Repo.preload([:team, :user, :project_type, :project_category_type, :project_status, :priority_type])
+  end
 
     # New Map
     def get_operational_projects_type do
@@ -389,7 +432,9 @@ end
          integrations_projects: operational_projects_type(project_category.operational , project_types.integrations),
          payment_method_projects: operational_projects_type(project_category.operational , project_types.payment_methods),
          digital_marketing_projects: operational_projects_type(project_category.operational , project_types.digital_marketing),
-         bet_project_partners_projects: operational_projects_type(project_category.operational , project_types.bet_project_partners)
+         bet_project_partners_projects: operational_projects_type(project_category.operational , project_types.bet_project_partners),
+         all_projects: operational_projects(project_category.operational)
+        
        }]
      
        projects
@@ -432,7 +477,8 @@ end
          integrations_projects: team_operational_projects_type(team_id ,project_category.operational , project_types.integrations),
          payment_method_projects: team_operational_projects_type(team_id ,project_category.operational , project_types.payment_methods),
          digital_marketing_projects: team_operational_projects_type(team_id ,project_category.operational , project_types.digital_marketing),
-         bet_project_partners_projects: team_operational_projects_type(team_id ,project_category.operational , project_types.bet_project_partners)
+         bet_project_partners_projects: team_operational_projects_type(team_id ,project_category.operational , project_types.bet_project_partners),
+         all_projects: team_projects_category(project_category.operational, team_id)
        }]
      
        team_project
@@ -488,7 +534,8 @@ end
          integrations_projects: strategic_projects_type(project_category.strategic , project_types.integrations),
          payment_method_projects: strategic_projects_type(project_category.strategic , project_types.payment_methods),
          digital_marketing_projects: strategic_projects_type(project_category.strategic , project_types.digital_marketing),
-         bet_project_partners_projects: strategic_projects_type(project_category.strategic , project_types.bet_project_partners)
+         bet_project_partners_projects: strategic_projects_type(project_category.strategic , project_types.bet_project_partners),
+         all_projects: operational_projects(project_category.strategic)
        }]
      
        team_project
@@ -524,7 +571,8 @@ end
          integrations_projects: team_strategic_projects_type(team_id ,project_category.strategic , project_types.integrations),
          payment_method_projects: team_strategic_projects_type(team_id ,project_category.strategic , project_types.payment_methods),
          digital_marketing_projects: team_strategic_projects_type(team_id ,project_category.strategic , project_types.digital_marketing),
-         bet_project_partners_projects: team_strategic_projects_type(team_id ,project_category.strategic , project_types.bet_project_partners)
+         bet_project_partners_projects: team_strategic_projects_type(team_id ,project_category.strategic , project_types.bet_project_partners),
+         all_projects: team_projects_category(project_category.strategic, team_id)
        }]
      
        team_project

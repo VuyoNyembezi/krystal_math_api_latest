@@ -99,6 +99,16 @@ defmodule KrystalMathApiWeb.Router do
 
 ################## USER CONTROLLER ##############
 
+# Search Endpoints
+
+get "/user/account/active/search", UserController, :accounts_search
+get "/user/account/terminated/search", UserController, :terminated_accounts_search
+get "/user/account/role/search", UserController, :role_accounts_search
+get "team/user/account/search", UserController, :team_accounts_search
+
+
+
+
     get "/team/members", UserController, :teams_members
     get "/users", UserController, :all_users
     get "/user/role", UserController, :user_by_role
@@ -160,6 +170,11 @@ defmodule KrystalMathApiWeb.Router do
     # Team Routes 
     get "/team/projects/all", ProjectController, :team_projects
     get "/team/projects/category_type/all", ProjectController, :team_projects_by_category
+    # all team strategic projects
+    get "/team/projects/strategic/all", ProjectController, :team_projects_strategic
+    # all team operational projects
+    get "/team/projects/operational/all", ProjectController, :team_projects_operational
+
     get "/team/projects", ProjectController, :team_projects_type
     get "/team/projects/category_and_project_type/all", ProjectController, :team_projects_by_type_and_category
       
@@ -277,6 +292,8 @@ get "/project_assignment/over_due/team/all", AssignmentController, :overview_ove
 
   ####### Counters #####
     get "/project_assignments/user/count", AssignmentController, :user_project_assignment
+    get "/operational/project_assignments/user/count", AssignmentController, :user_operational_project_assignment
+    get "/strategic/project_assignments/user/count", AssignmentController, :user_strategic_project_assignment
 ######### Task Controller #########
 
     # search endpoints
