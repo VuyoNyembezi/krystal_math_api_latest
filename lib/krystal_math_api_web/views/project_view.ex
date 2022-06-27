@@ -55,7 +55,8 @@ defmodule KrystalMathApiWeb.ProjectView do
          integrations_projects: render_many(project.integrations_projects, ProjectView, "project_details.json"),
          payment_method_projects: render_many(project.payment_method_projects, ProjectView, "project_details.json"),
          digital_marketing_projects: render_many(project.digital_marketing_projects, ProjectView, "project_details.json"),
-         bet_project_partners_projects: render_many(project.bet_project_partners_projects, ProjectView, "project_details.json")
+         bet_project_partners_projects: render_many(project.bet_project_partners_projects, ProjectView, "project_details.json"),
+         all_projects: render_many(project.all_projects, ProjectView, "project_details.json")
        }
      end
 

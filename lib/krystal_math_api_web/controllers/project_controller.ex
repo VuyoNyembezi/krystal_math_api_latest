@@ -131,6 +131,15 @@ def team_projects_by_category(conn, %{"team_id" => team_id,"category_type" => ca
     projects = Projects.team_projects_category_type(team_id, category_type)
     render(conn,"index.json", projects: projects)
 end
+def team_projects_operational(conn, %{"team_id" => team_id}) do
+  projects = Projects.team_operational_all_projects(team_id)
+  render(conn,"index.json", projects: projects)
+end
+def team_projects_strategic(conn, %{"team_id" => team_id}) do
+  projects = Projects.team_strategic_all_projects(team_id)
+  render(conn,"index.json", projects: projects)
+end
+
 
 # Team Projects by type
 
@@ -138,12 +147,6 @@ def team_projects_type(conn, %{"team_id" => team_id}) do
   project = Projects.get_all_team_projects_type(team_id)
   render(conn,"project_overview.json", project: project)
 end
-
-
-
-
-
-
 
 
 # Team projects by category (Operational, Strategic)
@@ -223,8 +226,6 @@ def all_live_issues_search(conn, %{"search" => search_term}) do
   live_issue = Projects.live_issues_search(search_term)
   render(conn,"live_overview.json", live_issue: live_issue)
 end
-
-
 
 # search team live issues
 def team_live_issuses_search(conn, %{"team_id" => team_id,"search" => search_term}) do

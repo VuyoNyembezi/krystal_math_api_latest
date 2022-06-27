@@ -14,7 +14,7 @@ defmodule KrystalMathApiWeb.FallbackController do
     |> put_view(KrystalMathApiWeb.ErrorView)
     |> render(:"404")
   end
-
+# un
   def call(conn, {:error, :unauthorized}) do
     conn
     |> put_status(:unauthorized)
@@ -26,6 +26,14 @@ defmodule KrystalMathApiWeb.FallbackController do
     |> put_status(:bad_request)
     |> put_view(KrystalMathApiWeb.ErrorView)
     |> render(:"400")
+  end
+
+  # if record already exists
+  def call(conn, {:error, :precondition_failed}) do
+    conn
+    |> put_status(:precondition_failed)
+    |> put_view(KrystalMathApiWeb.ErrorView)
+    |> render(:"412")
   end
 
   def call(conn, {:error, %Ecto.Changeset{} = changeset}) do

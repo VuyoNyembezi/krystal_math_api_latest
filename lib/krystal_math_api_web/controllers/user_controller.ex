@@ -6,7 +6,7 @@ defmodule KrystalMathApiWeb.UserController do
   
     action_fallback KrystalMathApiWeb.FallbackController
   
-    #FIRST TIME API EXECUTION METHODS 
+    #FIRST TIME API EXECUTION METHODS DEAFAULT ADMIN ACCOUNT 
     def admin_initial_get(conn, %{"employee_code" => employee_code}) do
       case Accounts.admin_get(employee_code) do
         {:ok,user} ->
@@ -32,6 +32,31 @@ defmodule KrystalMathApiWeb.UserController do
              |> send_resp(401, body)
       end
     end
+# Search USER ACCOUNTS 
+def accounts_search(conn, %{"search" => search_term}) do
+  users = Accounts.user_account_name_search(search_term)
+  render(conn,"index.json", users: users)
+end
+
+# search terminated accounts
+def terminated_accounts_search(conn, %{"search" => search_term}) do
+  users = Accounts.terminated_user_account_name_search(search_term)
+  render(conn,"index.json", users: users)
+end
+
+# search user accounts by role
+def role_accounts_search(conn, %{"role_id" => role_id,"search" => search_term}) do
+  users = Accounts.user_account_role_search(role_id,search_term)
+  render(conn, "index.json", users: users )
+end
+
+# search team user accounts 
+def team_accounts_search(conn, %{"team_id" => team_id,"search" => search_term}) do
+  users = Accounts.user_account_team_search(team_id,search_term)
+  render(conn, "index.json", users: users )
+end
+
+
 
   #Returns all the Users registered on the system
   
