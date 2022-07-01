@@ -34,7 +34,6 @@ defmodule KrystalMathApiWeb.ProjectController do
       render(conn,"index.json", projects: projects)
     end
 
-
     # search projects  by category e.g( Operational, Strategic) and project type
       # Map category search 
       def search_operational_projects(conn, %{"search" => search_term}) do

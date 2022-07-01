@@ -35,11 +35,11 @@ defmodule KrystalMathApiWeb.AdminController do
     # Delete user Role
     def delete_user_role(conn, %{"id" => id}) do
             user_role = AdminOperations.get_user_role!(id)
-            with {:ok,%Role{} = user_role} <- AdminOperations.delete_user_role(user_role) do
+            with {:ok,%Role{}} <- AdminOperations.delete_user_role(user_role) do
             conn
             |> put_status(200)
             |> text("user role deleted successfully")
-            end
+    end
     end
 
 ########## Enviroment ##############
@@ -70,7 +70,7 @@ defmodule KrystalMathApiWeb.AdminController do
     # Delete Enviroment
         def delete_enviroment(conn, %{"id" => id}) do
             environment = AdminOperations.get_environment!(id)
-            with {:ok,%Environment{} = environment} <- AdminOperations.delete_enviroment(environment) do
+            with {:ok,%Environment{}} <- AdminOperations.delete_enviroment(environment) do
             conn
             |> put_status(200)
             |> text("enviroment deleted successfully")
@@ -132,7 +132,7 @@ defmodule KrystalMathApiWeb.AdminController do
     # Delete Team
         def delete_team(conn, %{"id" => id}) do
             team = AdminOperations.get_team!(id)
-            with {:ok,%Team{} = team} <- AdminOperations.delete_team(team) do
+            with {:ok,%Team{} } <- AdminOperations.delete_team(team) do
             conn
             |> put_status(200)
             |> text("team deleted successfully")
@@ -167,7 +167,7 @@ defmodule KrystalMathApiWeb.AdminController do
     # Delete Task Status
     def delete_task_status(conn, %{"id" => id}) do
         task_status = AdminOperations.get_task_status!(id)
-        with {:ok,%TaskStatus{} = task_status} <- AdminOperations.delete_task_status(task_status) do
+        with {:ok,%TaskStatus{}} <- AdminOperations.delete_task_status(task_status) do
         conn
         |> put_status(200)
         |> text("team deleted successfully")
@@ -199,7 +199,7 @@ defmodule KrystalMathApiWeb.AdminController do
     # Delete User Status
         def delete_user_status(conn, %{"id" => id}) do
             user_status = AdminOperations.get_user_status!(id)
-            with {:ok,%UserStatus{} = user_status} <- AdminOperations.delete_user_status(user_status) do
+            with {:ok,%UserStatus{}} <- AdminOperations.delete_user_status(user_status) do
             conn
             |> put_status(200)
             |> text("team deleted successfully")
@@ -232,7 +232,7 @@ defmodule KrystalMathApiWeb.AdminController do
     # Delete Project Status
         def delete_project_status(conn, %{"id" => id}) do
             project_status = AdminOperations.get_project_status!(id)
-            with {:ok,%Status{} = project_status} <- AdminOperations.delete_project_status(project_status) do
+            with {:ok,%Status{}} <- AdminOperations.delete_project_status(project_status) do
             conn
             |> put_status(200)
             |> text("team deleted successfully")
@@ -264,7 +264,7 @@ defmodule KrystalMathApiWeb.AdminController do
     # Delete Project type 
     def delete_project_type(conn, %{"id" => id}) do
         project_type = AdminOperations.get_project_type!(id)
-        with {:ok,%ProjectType{} = project_type} <- AdminOperations.delete_project_type(project_type) do
+        with {:ok,%ProjectType{}} <- AdminOperations.delete_project_type(project_type) do
         conn
         |> put_status(200)
         |> text("project Type deleted successfully")
@@ -297,7 +297,7 @@ defmodule KrystalMathApiWeb.AdminController do
        # Delete Priority type Status
     def delete_priority_type(conn, %{"id" => id}) do
         priority_type = AdminOperations.get_priority!(id)
-        with {:ok,%Priority{} = priority_type} <- AdminOperations.delete_priority_type(priority_type) do
+        with {:ok,%Priority{} } <- AdminOperations.delete_priority_type(priority_type) do
         conn
         |> put_status(200)
         |> text("Priority Type deleted successfully")
@@ -332,7 +332,7 @@ defmodule KrystalMathApiWeb.AdminController do
     # Delete Project Category Status
     def delete_project_category_type(conn, %{"id" => id}) do
         project_category_type = AdminOperations.get_project_category_type!(id)
-        with {:ok,%ProjectCategoryType{} = project_category_type} <- AdminOperations.delete_project_category_type(project_category_type) do
+        with {:ok,%ProjectCategoryType{}} <- AdminOperations.delete_project_category_type(project_category_type) do
         conn
         |> put_status(200)
         |> text("project category deleted successfully")

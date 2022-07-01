@@ -12,7 +12,7 @@ defmodule KrystalMathApiWeb.Router do
   scope "/api", KrystalMathApiWeb do
     pipe_through :api
    # ################# USER CONTROLLER ROUTES #################
-   
+  
     # initial  routes (only runs when default admin profile is created)
     get "/user/admin/new", UserController, :admin_initial_get
     
@@ -126,7 +126,6 @@ get "team/user/account/search", UserController, :team_accounts_search
     delete "/user/delete", UserController, :delete_user
     # Log out
     post "/user/logout", UserController, :logout
-
 
 ################ Project Controller ###########
     get "/projects/all", ProjectController, :all_projects
@@ -295,7 +294,6 @@ get "/project_assignment/over_due/team/all", AssignmentController, :overview_ove
     get "/operational/project_assignments/user/count", AssignmentController, :user_operational_project_assignment
     get "/strategic/project_assignments/user/count", AssignmentController, :user_strategic_project_assignment
 ######### Task Controller #########
-
     # search endpoints
     get "/team/tasks/search", TaskController, :team_tasks_search
     get "/user/tasks/search", TaskController, :user_tasks_search
