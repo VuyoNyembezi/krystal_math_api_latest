@@ -4,7 +4,7 @@ defmodule KrystalMathApi.Repo.Migrations.CreateDefaultUserProfile do
   alias KrystalMathApi.Repo
   alias KrystalMathApi.Accounts.{User,Role}
   alias KrystalMathApi.Operations.Team
-  import Ecto.Changeset
+ 
   def up do
     #SystemRoles
     Repo.insert(%Role{name: "Admin"})

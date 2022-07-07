@@ -14,5 +14,14 @@ defmodule KrystalMathApi.Repo.Migrations.CreateProjectAssignments do
       add :active, :bool
       timestamps()
     end
+
+    create index(:projects_assignments, [:user_id])
+    create index(:projects_assignments, [:project_id])
+
+    create unique_index(
+      :projects_assignments,
+      [:user_id, :project_id],
+      name: projects_assignments_user_id_project_id_index
+    )
   end
 end

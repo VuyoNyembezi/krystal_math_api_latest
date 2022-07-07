@@ -18,7 +18,7 @@ defmodule KrystalMathApiWeb.UserController do
           |> send_resp(404, body)
       end
     end
-   
+
      def admin_password_initial_update(conn, %{"employee_code"=> employee_code,"password_reset"=> password_reset, "user"=> user_params }) do
       case Accounts.update_password_user_check(employee_code,password_reset) do
          {:ok, user} ->
