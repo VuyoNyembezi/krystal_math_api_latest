@@ -23,6 +23,7 @@ defmodule KrystalMathApi.Projects.ProjectAssignment do
       projects_assignment
       |> cast(attrs, [:project_type_id, :team_id,:user_id, :user_status_id,:project_id, :due_date, :kickoff_date, :active, :project_category_type_id ])
       |> validate_required([:project_type_id, :team_id, :user_status_id, :project_id, :due_date, :project_category_type_id ])
+      |> unique_constraint([:user_id, :project_id ])
     end
   
     def activation_changeset(projects_assignment, attrs) do

@@ -4,7 +4,7 @@ defmodule KrystalMathApi.Repo.Migrations.CreateProjectDefaultValues do
   alias KrystalMathApi.Repo
   alias KrystalMathApi.Projects.CategoriesAndImportance.{ProjectType,Priority,Status,ProjectCategoryType}
   alias KrystalMathApi.Operations.{UserStatus, TaskStatus}
-  import Ecto.Changeset
+
   use Ecto.Schema
 
   def up do
