@@ -49,11 +49,6 @@ defmodule KrystalMathApi.Projects do
 
   # Get Project Category 
 
-  defp get_project_category(project_category) do
-    query = from(pt in ProjectCategoryType, select: pt.id, where: pt.name == ^project_category)
-    Repo.one(query)
-  end
-
   def get_project_categories do
     query = from(pct in ProjectCategoryType, order_by: [asc: pct.id], select: {pct.id, pct.name})
     Repo.all(query)

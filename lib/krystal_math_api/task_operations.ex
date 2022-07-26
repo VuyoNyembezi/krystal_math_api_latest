@@ -94,16 +94,13 @@ defmodule KrystalMathApi.TaskOperations do
   end
 
   defp completed_team_task_search(team_id, search_term) do
-    completed_key = %{
-      completed: get_task_status("Completed")
-    }
-
+    completed_key = task_status_values()
     search_name = "%#{search_term}%"
 
     Repo.all(
       from(t in Task,
         where:
-          like(t.name, ^search_name) and t.task_status_id == ^completed_key.completed and
+          like(t.name, ^search_name) and t.task_status_id == ^completed_key.completed_id and
             t.active == false and t.team_id == ^team_id
       )
     )
@@ -203,16 +200,13 @@ defmodule KrystalMathApi.TaskOperations do
   end
 
   defp completed_user_task_search(team_id, user_id, search_term) do
-    completed_key = %{
-      completed: get_task_status("Completed")
-    }
-
+    completed_key = task_status_values()
     search_name = "%#{search_term}%"
 
     Repo.all(
       from(t in Task,
         where:
-          like(t.name, ^search_name) and t.task_status_id == ^completed_key.completed and
+          like(t.name, ^search_name) and t.task_status_id == ^completed_key.completed_id and
             t.active == false and t.team_id == ^team_id and t.user_id == ^user_id
       )
     )
@@ -231,10 +225,32 @@ defmodule KrystalMathApi.TaskOperations do
   end
 
   # get task status id by name
+  defp get_task_statuses do
+    query = from(ts in TaskStatus, order_by: [asc: ts.id], select: {ts.id, ts.name})
+    Repo.all(query)
+  end
 
-  defp get_task_status(task_status_name) do
-    query = from(ts in TaskStatus, select: ts.id, where: ts.name == ^task_status_name)
-    Repo.one(query)
+  defp task_status_values do
+    task_statuses_data = get_task_statuses()
+
+    [
+      {not_started_id, _not_started_name},
+      {on_hold_id, _on_hold_name},
+      {in_progress_id, _in_progress_name},
+      {testing_id, _testing},
+      {completed_id, _completed}
+    ] = task_statuses_data
+
+    {task_statuses} =
+      {%{
+         not_started_id: not_started_id,
+         on_hold_id: on_hold_id,
+         in_progress_id: in_progress_id,
+         testing_id: testing_id,
+         completed_id: completed_id
+       }}
+
+    task_statuses
   end
 
   @doc """
@@ -308,15 +324,13 @@ defmodule KrystalMathApi.TaskOperations do
   end
 
   defp team_completed(team_id) do
-    completed_key = %{
-      completed: get_task_status("Completed")
-    }
+    completed_key = task_status_values()
 
     query =
       from(t in Task,
         where:
           t.team_id == ^team_id and t.active == false and
-            t.task_status_id == ^completed_key.completed
+            t.task_status_id == ^completed_key.completed_id
       )
 
     Repo.all(query)
@@ -382,15 +396,13 @@ defmodule KrystalMathApi.TaskOperations do
   # gets all completed user tasks
 
   defp user_completed_tasks(team_id, user_id) do
-    completed_key = %{
-      completed: get_task_status("Completed")
-    }
+    completed_key = task_status_values()
 
     query =
       from(t in Task,
         where:
           t.user_id == ^user_id and t.team_id == ^team_id and t.active == false and
-            t.task_status_id == ^completed_key.completed
+            t.task_status_id == ^completed_key.completed_id
       )
 
     Repo.all(query)
