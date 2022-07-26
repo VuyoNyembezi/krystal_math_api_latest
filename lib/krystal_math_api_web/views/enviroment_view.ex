@@ -12,11 +12,8 @@ defmodule KrystalMathApiWeb.EnvironmentView do
       name: environment.name
     }
   end
+
   def render("show.json", %{environment: environment}) do
     %{data: render_one(environment, EnvironmentView, "environment.json")}
   end
-
-
-
-
 end

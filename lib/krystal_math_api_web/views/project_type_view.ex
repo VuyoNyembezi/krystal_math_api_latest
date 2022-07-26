@@ -12,9 +12,8 @@ defmodule KrystalMathApiWeb.ProjectTypeView do
       name: project_type.name
     }
   end
-  
+
   def render("show.json", %{project_type: project_type}) do
     %{data: render_one(project_type, ProjectTypeView, "project_type.json")}
   end
-
 end

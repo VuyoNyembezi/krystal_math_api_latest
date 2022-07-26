@@ -5,6 +5,7 @@ defmodule KrystalMathApi.Repo.Migrations.CreateEnvironment do
     create table(:environments) do
       add :name, :string
     end
-    create unique_index(:environments,[:name])
+
+    create unique_index(:environments, [:name])
   end
 end

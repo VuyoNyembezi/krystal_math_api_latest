@@ -15,6 +15,7 @@ defmodule KrystalMathApi.Repo.Migrations.CreateLiveIssue do
       add :is_active, :bool
       timestamps()
     end
-    create unique_index(:live_issues,[:name])
+
+    create unique_index(:live_issues, [:name])
   end
 end

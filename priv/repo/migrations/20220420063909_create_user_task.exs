@@ -15,6 +15,6 @@ defmodule KrystalMathApi.Repo.Migrations.CreateUserTask do
       timestamps()
     end
 
-    create unique_index(:tasks,[:name])
+    create unique_index(:tasks, [:name])
   end
 end

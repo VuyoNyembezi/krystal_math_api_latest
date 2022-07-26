@@ -1,7 +1,7 @@
 defmodule KrystalMathApiWeb.TaskView do
   use KrystalMathApiWeb, :view
   alias KrystalMathApiWeb.{TaskView, TaskStatusView, EnvironmentView, TeamView}
-  alias KrystalMathApiWeb.{UserView, UserStatusView,CounterView}
+  alias KrystalMathApiWeb.{UserView, UserStatusView, CounterView}
 
   def render("index.json", %{tasks: tasks}) do
     %{data: render_many(tasks, TaskView, "full_task_details.json")}
@@ -48,19 +48,20 @@ defmodule KrystalMathApiWeb.TaskView do
       updated_at: task.updated_at
     }
   end
+
   def render("task_overview.json", %{task_overview: task_overview}) do
     %{
-      all_tasks: render_many( task_overview.all_tasks, TaskView, "full_task_details.json"),
+      all_tasks: render_many(task_overview.all_tasks, TaskView, "full_task_details.json"),
       active_tasks: render_many(task_overview.active_tasks, TaskView, "full_task_details.json"),
-      not_active_tasks: render_many(task_overview.not_active_tasks, TaskView, "full_task_details.json"),
-       open_tasks: render_many(task_overview.open_tasks, TaskView, "full_task_details.json"),
-       over_due_tasks: render_many(task_overview.over_due_tasks, TaskView, "full_task_details.json"),
-       completed_tasks: render_many(task_overview.completed_tasks, TaskView, "full_task_details.json")
+      not_active_tasks:
+        render_many(task_overview.not_active_tasks, TaskView, "full_task_details.json"),
+      open_tasks: render_many(task_overview.open_tasks, TaskView, "full_task_details.json"),
+      over_due_tasks:
+        render_many(task_overview.over_due_tasks, TaskView, "full_task_details.json"),
+      completed_tasks:
+        render_many(task_overview.completed_tasks, TaskView, "full_task_details.json")
     }
   end
-
-
-
 
   # USER JSON VIEW USED FOR ASSOCIATION
 
@@ -208,32 +209,22 @@ defmodule KrystalMathApiWeb.TaskView do
     }
   end
 
-# User Status Json View
+  # User Status Json View
 
+  def render("index.json", %{user_statuses: user_statuses}) do
+    %{data: render_many(user_statuses, UserStatusView, "user_status.json")}
+  end
 
+  def render("show.json", %{user_status: user_status}) do
+    %{data: render_one(user_status, UserStatusView, "user_status.json")}
+  end
 
-def render("index.json", %{user_statuses: user_statuses}) do
-  %{data: render_many(user_statuses, UserStatusView, "user_status.json")}
-end
-
-def render("show.json", %{user_status: user_status}) do
-  %{data: render_one(user_status, UserStatusView, "user_status.json")}
-end
-
-def render("user_status.json", %{user_status: user_status}) do
-  %{
-    id: user_status.id,
-    name: user_status.name
-  }
-end
-
-
-
-
-
-
-
-
+  def render("user_status.json", %{user_status: user_status}) do
+    %{
+      id: user_status.id,
+      name: user_status.name
+    }
+  end
 
   ################## Counter json Views  ########################
 
@@ -242,78 +233,81 @@ end
       data: render_many(tasks_count, CounterView, "task_counter.json")
     }
   end
+
   def render("task_counter.json", %{counter: counter}) do
     %{
       tasks_count: counter.tasks_count
     }
   end
-  
-# Task status Counter
 
-# not started
-def render("index.json", %{task_not_started: task_not_started}) do
-  %{
-    data: render_many(task_not_started, CounterView, "not_started_tasks.json")
-  }
-end
+  # Task status Counter
 
-def render("not_started_tasks.json", %{counter: counter}) do
-  %{
-    task_not_started: counter.task_not_started
-  }
-end
+  # not started
+  def render("index.json", %{task_not_started: task_not_started}) do
+    %{
+      data: render_many(task_not_started, CounterView, "not_started_tasks.json")
+    }
+  end
 
-# on hold
-def render("index.json", %{task_on_hold: task_on_hold}) do
-  %{
-    data: render_many(task_on_hold, CounterView, "task_on_hold.json")
-  }
-end
+  def render("not_started_tasks.json", %{counter: counter}) do
+    %{
+      task_not_started: counter.task_not_started
+    }
+  end
 
-def render("task_on_hold.json", %{counter: counter}) do
-  %{
-    task_on_hold: counter.task_on_hold
-  }
-end
-# in progress
-def render("index.json", %{task_in_progress: task_in_progress}) do
-  %{
-    data: render_many(task_in_progress, CounterView, "task_in_progress.json")
-  }
-end
+  # on hold
+  def render("index.json", %{task_on_hold: task_on_hold}) do
+    %{
+      data: render_many(task_on_hold, CounterView, "task_on_hold.json")
+    }
+  end
 
-def render("task_in_progress.json", %{counter: counter}) do
-  %{
-    task_in_progress: counter.task_in_progress
-  }
-end
-# Testing
-def render("index.json", %{task_testing: task_testing}) do
-  %{
-    data: render_many(task_testing, CounterView, "task_testing.json")
-  }
-end
+  def render("task_on_hold.json", %{counter: counter}) do
+    %{
+      task_on_hold: counter.task_on_hold
+    }
+  end
 
-def render("task_testing.json", %{counter: counter}) do
-  %{
-    task_testing: counter.task_testing
-  }
-end
-# Completed
-def render("index.json", %{task_completed: task_completed}) do
-  %{
-    data: render_many(task_completed, CounterView, "task_completed.json")
-  }
-end
+  # in progress
+  def render("index.json", %{task_in_progress: task_in_progress}) do
+    %{
+      data: render_many(task_in_progress, CounterView, "task_in_progress.json")
+    }
+  end
 
-def render("task_completed.json", %{counter: counter}) do
-  %{
-    task_completed: counter.task_completed
-  }
-end
+  def render("task_in_progress.json", %{counter: counter}) do
+    %{
+      task_in_progress: counter.task_in_progress
+    }
+  end
 
+  # Testing
+  def render("index.json", %{task_testing: task_testing}) do
+    %{
+      data: render_many(task_testing, CounterView, "task_testing.json")
+    }
+  end
 
-# Team Counter JSON View
+  def render("task_testing.json", %{counter: counter}) do
+    %{
+      task_testing: counter.task_testing
+    }
+  end
+
+  # Completed
+  def render("index.json", %{task_completed: task_completed}) do
+    %{
+      data: render_many(task_completed, CounterView, "task_completed.json")
+    }
+  end
+
+  def render("task_completed.json", %{counter: counter}) do
+    %{
+      task_completed: counter.task_completed
+    }
+  end
+
+  # Team Counter JSON View
 
   def render("task_statuses.json", %{task_statuses: task_statuses}) do
     %{
@@ -325,10 +319,9 @@ end
     }
   end
 
-
   # Team tasks
 
-    def render("tasks_overview.json", %{tasks_overview: tasks_overview}) do
+  def render("tasks_overview.json", %{tasks_overview: tasks_overview}) do
     %{
       all_tasks: tasks_overview.all_tasks,
       over_due: tasks_overview.over_due,
@@ -336,14 +329,4 @@ end
       completed: tasks_overview.completed
     }
   end
-
-
-
-
-
-
-
-
-
-
 end

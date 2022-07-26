@@ -6,7 +6,6 @@ defmodule KrystalMathApiWeb.FallbackController do
   """
   use KrystalMathApiWeb, :controller
 
-  
   # This clause is an example of how to handle resources that cannot be found.
   def call(conn, {:error, :not_found}) do
     conn
@@ -14,13 +13,15 @@ defmodule KrystalMathApiWeb.FallbackController do
     |> put_view(KrystalMathApiWeb.ErrorView)
     |> render(:"404")
   end
-# un
+
+  # un
   def call(conn, {:error, :unauthorized}) do
     conn
     |> put_status(:unauthorized)
     |> put_view(KrystalMathApiWeb.ErrorView)
     |> render(:"401")
   end
+
   def call(conn, {:error, :bad_request}) do
     conn
     |> put_status(:bad_request)

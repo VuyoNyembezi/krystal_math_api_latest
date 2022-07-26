@@ -36,7 +36,11 @@ defmodule KrystalMathApiWeb.AssignmentController do
   #   projects_assignment = ProjectAssignments.user_project_assignment_search(team_id,user_id,project_type,search_term)
   #   render(conn, "assignment_record.json",  projects_assignment: projects_assignment  )
   # end
-  def user_project_assignments_search(conn, %{"team_id" => team_id,"user_id" => user_id,"search" => search_term}) do
+  def user_project_assignments_search(conn, %{
+        "team_id" => team_id,
+        "user_id" => user_id,
+        "search" => search_term
+      }) do
     projects_assignment = ProjectAssignments.user_search_assignment(team_id, user_id, search_term)
     render(conn, "assignment_record.json", projects_assignment: projects_assignment)
   end
@@ -104,7 +108,11 @@ defmodule KrystalMathApiWeb.AssignmentController do
 
   # get project assignments by team , project type and user identification
 
-  def project_user_assigned(conn, %{"team_id" => team_id, "project_type" => project_type, "id" => user_id}) do
+  def project_user_assigned(conn, %{
+        "team_id" => team_id,
+        "project_type" => project_type,
+        "id" => user_id
+      }) do
     projects_assignment =
       ProjectAssignments.project_type_dev_assigned(team_id, project_type, user_id)
 
@@ -192,14 +200,15 @@ defmodule KrystalMathApiWeb.AssignmentController do
     render(conn, "assignment_status_overview.json", assignment_overview: assignment_overview)
   end
 
-    # get user operational projects assignments  overview count
-    def user_operational_project_assignment(conn, %{ "team_id" => team_id,"user_id" => user_id }) do
-  assignment_overview = ProjectAssignments.user_operational_assignment(team_id, user_id)
-  render(conn, "assignment_status_overview.json", assignment_overview: assignment_overview)
-end
-    # get user strategic projects assignments  overview count
-    def user_strategic_project_assignment(conn, %{ "team_id" => team_id,"user_id" => user_id }) do
-      assignment_overview = ProjectAssignments.user_strategic_assignment(team_id, user_id)
-      render(conn, "assignment_status_overview.json", assignment_overview: assignment_overview)
-    end
+  # get user operational projects assignments  overview count
+  def user_operational_project_assignment(conn, %{"team_id" => team_id, "user_id" => user_id}) do
+    assignment_overview = ProjectAssignments.user_operational_assignment(team_id, user_id)
+    render(conn, "assignment_status_overview.json", assignment_overview: assignment_overview)
+  end
+
+  # get user strategic projects assignments  overview count
+  def user_strategic_project_assignment(conn, %{"team_id" => team_id, "user_id" => user_id}) do
+    assignment_overview = ProjectAssignments.user_strategic_assignment(team_id, user_id)
+    render(conn, "assignment_status_overview.json", assignment_overview: assignment_overview)
+  end
 end

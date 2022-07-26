@@ -7,9 +7,9 @@ defmodule KrystalMathApi.Accounts.Authentication.Guardian do
     {:ok, sub}
   end
 
-def resource_from_claims(claims) do
-  id = claims["sub"]
-  resource = Accounts.get_user!(id)
-  {:ok, resource}
-end
+  def resource_from_claims(claims) do
+    id = claims["sub"]
+    resource = Accounts.get_user!(id)
+    {:ok, resource}
+  end
 end
