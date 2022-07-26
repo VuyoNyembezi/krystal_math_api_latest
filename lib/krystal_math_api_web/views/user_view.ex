@@ -4,7 +4,6 @@ defmodule KrystalMathApiWeb.UserView do
   alias KrystalMathApiWeb.{
     ProjectView,
     UserRoleView,
-    DepartmentView,
     EnvironmentView,
     TeamView,
     UserView
@@ -88,7 +87,7 @@ defmodule KrystalMathApiWeb.UserView do
       last_name: user.last_name,
       email: user.email,
       team: render_one(user.team, TeamView, "team.json"),
-      # # department: render_one(user.department, DepartmentView, "department.json"),
+    
       # environment: render_one(user.environment, environmentView, "environment.json"),
       project: render_many(user.project, ProjectView, "project.json")
     }
@@ -136,14 +135,6 @@ defmodule KrystalMathApiWeb.UserView do
     %{data: render_one(team, TeamView, "team_members.json")}
   end
 
-  def render("team_members.json", %{team: team}) do
-    %{
-      id: team.id,
-      name: team.name,
-      users: render_many(team.users, UserView, "user_details.json")
-    }
-  end
-
   def render("team.json", %{team: team}) do
     %{
       id: team.id,
@@ -178,15 +169,7 @@ defmodule KrystalMathApiWeb.UserView do
 
   # Project views
 
-  # team view controls
-
-  def render("index.json", %{teams: teams}) do
-    %{data: render_many(teams, TeamView, "team.json")}
-  end
-
-  def render("show.json", %{team: team}) do
-    %{data: render_one(team, TeamView, "team.json")}
-  end
+  
 
   # environment view controls
 

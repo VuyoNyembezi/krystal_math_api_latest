@@ -173,7 +173,7 @@ defmodule KrystalMathApi.Accounts do
 
   @doc """
   Checks the employee code if its for an admin account
-
+  
   """
   def admin_check(employee_code) do
     case Repo.get_by(User, employee_code: employee_code, is_active: true, is_admin: true) do
@@ -187,7 +187,7 @@ defmodule KrystalMathApi.Accounts do
 
   @doc """
   Updates user Information Mapping, Termination, new roles
-
+  
   """
   def update_user(%User{} = user, attrs) do
     user
@@ -326,7 +326,7 @@ defmodule KrystalMathApi.Accounts do
 
   @doc """
   deletes the user account from the system
-
+  
   """
   def delete_user(%User{} = user) do
     Repo.delete(user)
@@ -334,7 +334,7 @@ defmodule KrystalMathApi.Accounts do
 
   @doc """
   returns a `%Ecto.Changeset{}` for tracking user changes.
-
+  
   """
   def change_user(%User{} = user, attrs \\ %{}) do
     User.changeset(user, attrs)

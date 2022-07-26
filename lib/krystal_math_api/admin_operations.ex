@@ -185,7 +185,7 @@ defmodule KrystalMathApi.AdminOperations do
   ###### TEAM  ####
   @doc """
   get team by id
-
+  
   def get_team!(id), do: Repo.get!(Team, id)
   """
   def get_team!(id) do
@@ -319,7 +319,7 @@ defmodule KrystalMathApi.AdminOperations do
   ### DELETE #####
   @doc """
   deletes the record of the user Status
-
+  
   """
   def delete_user_status(%UserStatus{} = user_status) do
     Repo.delete(user_status)
@@ -381,7 +381,7 @@ defmodule KrystalMathApi.AdminOperations do
 
   @doc """
   deletes the record of the project Status
-
+  
   """
   def delete_project_status(%Status{} = project_status) do
     Repo.delete(project_status)
@@ -432,7 +432,7 @@ defmodule KrystalMathApi.AdminOperations do
 
   @doc """
   deletes the record of the project Status
-
+  
   """
   def delete_priority_type(%Priority{} = priority_type) do
     Repo.delete(priority_type)
@@ -484,7 +484,7 @@ defmodule KrystalMathApi.AdminOperations do
 
   @doc """
   deletes the record of the project type
-
+  
   """
   def delete_project_type(%ProjectType{} = project_type) do
     Repo.delete(project_type)
@@ -536,7 +536,7 @@ defmodule KrystalMathApi.AdminOperations do
 
   @doc """
   deletes the record of the project category type
-
+  
   """
   def delete_project_category_type(%ProjectCategoryType{} = project_category_type) do
     Repo.delete(project_category_type)
