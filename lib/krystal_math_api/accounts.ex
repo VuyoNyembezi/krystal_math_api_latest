@@ -9,45 +9,69 @@ defmodule KrystalMathApi.Accounts do
   """
   def user_account_name_search(search_term) do
     search_name = "%#{search_term}%"
-    results =(from(u in User, where: like(u.name, ^search_name) or like(u.last_name, ^search_name) or like(u.employee_code, ^search_name)))
+
+    results =
+      from(u in User,
+        where:
+          like(u.name, ^search_name) or like(u.last_name, ^search_name) or
+            like(u.employee_code, ^search_name)
+      )
+
     Repo.all(results)
     |> Repo.preload([:team, :user_role])
   end
+
   @doc """
   search user account name,surname or employee Code
   """
   def terminated_user_account_name_search(search_term) do
     search_name = "%#{search_term}%"
-    results =(from(u in User, where: like(u.name, ^search_name) or like(u.last_name, ^search_name) or like(u.employee_code, ^search_name) ,where: u.is_active == false) ) 
+
+    results =
+      from(u in User,
+        where:
+          like(u.name, ^search_name) or like(u.last_name, ^search_name) or
+            like(u.employee_code, ^search_name),
+        where: u.is_active == false
+      )
+
     Repo.all(results)
     |> Repo.preload([:team, :user_role])
   end
-  
+
   @doc """
   search user account name,surname or employee Code and Role
   """
 
   def user_account_role_search(role_id, search_term) do
     search_name = "%#{search_term}%"
-    results =(
+
+    results =
       from(u in User,
-        where: like(u.name, ^search_name) or like(u.employee_code, ^search_name) or like(u.last_name, ^search_name) ,where: u.user_role_id == ^role_id and u.is_active == true
+        where:
+          like(u.name, ^search_name) or like(u.employee_code, ^search_name) or
+            like(u.last_name, ^search_name),
+        where: u.user_role_id == ^role_id and u.is_active == true
       )
-    )
+
     Repo.all(results)
     |> Repo.preload([:team, :user_role])
   end
 
-   @doc """
+  @doc """
   search team user account name,surname or employee Code 
   """
   def user_account_team_search(team_id, search_term) do
     search_name = "%#{search_term}%"
-    results =(
+
+    results =
       from(u in User,
-        where: like(u.name, ^search_name) or like(u.employee_code, ^search_name) or like(u.last_name, ^search_name)  ,where: u.team_id == ^team_id and u.is_active == true
+        where:
+          like(u.name, ^search_name) or like(u.employee_code, ^search_name) or
+            like(u.last_name, ^search_name),
+        where: u.team_id == ^team_id and u.is_active == true
       )
-    )
+
     Repo.all(results)
     |> Repo.preload([:team, :user_role])
   end

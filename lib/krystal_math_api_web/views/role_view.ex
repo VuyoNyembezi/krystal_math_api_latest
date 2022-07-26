@@ -1,7 +1,7 @@
 defmodule KrystalMathApiWeb.UserRoleView do
   use KrystalMathApiWeb, :view
   alias KrystalMathApiWeb.UserRoleView
-  
+
   def render("index.json", %{user_roles: user_roles}) do
     %{data: render_many(user_roles, UserRoleView, "role_members.json")}
   end
@@ -9,6 +9,7 @@ defmodule KrystalMathApiWeb.UserRoleView do
   def render("show.json", %{user_role: user_role}) do
     %{data: render_one(user_role, UserRoleView, "role_members.json")}
   end
+
   def render("show_update.json", %{user_role: user_role}) do
     %{data: render_one(user_role, UserRoleView, "role.json")}
   end
@@ -26,5 +27,4 @@ defmodule KrystalMathApiWeb.UserRoleView do
       name: user_role.name
     }
   end
-
 end

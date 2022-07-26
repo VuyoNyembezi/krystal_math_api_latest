@@ -1,9 +1,8 @@
 defmodule KrystalMathApiWeb.TeamView do
   use KrystalMathApiWeb, :view
-  alias KrystalMathApiWeb.{TeamView,TaskView}
+  alias KrystalMathApiWeb.{TeamView, TaskView}
   alias KrystalMathApiWeb.UserView
 
-  
   def render("index.json", %{teams: teams}) do
     %{data: render_many(teams, TeamView, "team.json")}
   end
@@ -11,12 +10,15 @@ defmodule KrystalMathApiWeb.TeamView do
   def render("team_with_leader.json", %{teams: teams}) do
     %{data: render_many(teams, TeamView, "team_team_lead.json")}
   end
+
   def render("show.json", %{team: team}) do
     %{data: render_one(team, TeamView, "team_members.json")}
   end
+
   def render("show_members.json", %{team: team}) do
     %{data: render_one(team, TeamView, "team_members.json")}
   end
+
   def render("team_members.json", %{team: team}) do
     %{
       id: team.id,
@@ -34,15 +36,16 @@ defmodule KrystalMathApiWeb.TeamView do
       is_active: team.is_active
     }
   end
+
   def render("team_team_lead.json", %{team: team}) do
     %{
       id: team.id,
       name: team.name,
-      
       team_lead: render_one(team.team_lead, UserView, "user.json"),
       is_active: team.is_active
     }
   end
+
   def render("user_details.json", %{user: user}) do
     %{
       id: user.id,
@@ -55,7 +58,7 @@ defmodule KrystalMathApiWeb.TeamView do
     }
   end
 
-  #User view json files generators
+  # User view json files generators
 
   def render("index.json", %{users: users}) do
     %{data: render_many(users, UserView, "user.json")}
@@ -64,15 +67,17 @@ defmodule KrystalMathApiWeb.TeamView do
   def render("show.json", %{user: user}) do
     %{data: render_one(user, UserView, "user_with_team.json")}
   end
-  def render("user_with_team.json", %{user: user})do
+
+  def render("user_with_team.json", %{user: user}) do
     %{
-       id: user.id,
-       employee_code: user.employee_code,
-       name: user.name,
-       last_name: user.last_name,
-       email: user.email,
-       team: render_one(user.team, TeamView, "team.json")}
-   end
+      id: user.id,
+      employee_code: user.employee_code,
+      name: user.name,
+      last_name: user.last_name,
+      email: user.email,
+      team: render_one(user.team, TeamView, "team.json")
+    }
+  end
 
   def render("user.json", %{user: user}) do
     %{
@@ -88,8 +93,7 @@ defmodule KrystalMathApiWeb.TeamView do
     }
   end
 
-
-# Task json views
+  # Task json views
   def render("index.json", %{tasks: tasks}) do
     %{data: render_many(tasks, TaskView, "full_task_details.json")}
   end
@@ -117,7 +121,7 @@ defmodule KrystalMathApiWeb.TeamView do
     }
   end
 
-  def render("full_task_details.json" ,%{task: task}) do
+  def render("full_task_details.json", %{task: task}) do
     %{
       id: task.id,
       name: task.name,
@@ -131,7 +135,4 @@ defmodule KrystalMathApiWeb.TeamView do
       active: task.active
     }
   end
-
-
-
 end

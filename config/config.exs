@@ -42,6 +42,6 @@ config :phoenix, :json_library, Jason
 import_config "#{config_env()}.exs"
 
 config :krystal_math_api,
-KrystalMathApi.Accounts.Authentication.Guardian,
-issuer: "krystal_math_api",
-secret_key: "IIMn2xsPI1xiAKHDi1OLSdCYRPK71EiyODnoxemak1Y1vPGXaY4Ze4LnY/JnrknU"
+       KrystalMathApi.Accounts.Authentication.Guardian,
+       issuer: "krystal_math_api",
+       secret_key: "IIMn2xsPI1xiAKHDi1OLSdCYRPK71EiyODnoxemak1Y1vPGXaY4Ze4LnY/JnrknU"

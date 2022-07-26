@@ -2,7 +2,6 @@ defmodule KrystalMathApiWeb.TaskStatusView do
   use KrystalMathApiWeb, :view
   alias KrystalMathApiWeb.TaskStatusView
 
- 
   def render("index.json", %{task_statuses: task_statuses}) do
     %{data: render_many(task_statuses, TaskStatusView, "task_status.json")}
   end

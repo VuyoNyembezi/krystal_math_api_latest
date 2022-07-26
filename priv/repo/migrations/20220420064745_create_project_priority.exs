@@ -5,7 +5,8 @@ defmodule KrystalMathApi.Repo.Migrations.CreateProjectPriority do
     create table(:priority_types) do
       add :name, :string
       add :level, :string, null: true
-     end
-     create unique_index(:priority_types,[:name])
+    end
+
+    create unique_index(:priority_types, [:name])
   end
 end

@@ -13,9 +13,10 @@ defmodule KrystalMathApi.Repo.Migrations.CreateProject do
       add :project_type_id, references(:project_types)
       add :priority_type_id, references(:priority_types)
       add :project_category_type_id, references(:project_category_types)
-      
+
       timestamps()
     end
-    create unique_index(:projects,[:name])
+
+    create unique_index(:projects, [:name])
   end
 end

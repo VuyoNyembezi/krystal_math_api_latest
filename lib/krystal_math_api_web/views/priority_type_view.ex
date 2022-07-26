@@ -13,8 +13,8 @@ defmodule KrystalMathApiWeb.PriorityTypeView do
       level: priority_type.level
     }
   end
+
   def render("show.json", %{priority_type: priority_type}) do
     %{data: render_one(priority_type, PriorityTypeView, "priority_type.json")}
   end
-
 end

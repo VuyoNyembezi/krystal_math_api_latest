@@ -6,6 +6,7 @@ defmodule KrystalMathApi.Repo.Migrations.CreateTeam do
       add :name, :string
       add :is_active, :bool
     end
-    create unique_index(:teams,[:name])
+
+    create unique_index(:teams, [:name])
   end
 end

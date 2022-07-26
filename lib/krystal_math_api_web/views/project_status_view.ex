@@ -14,8 +14,8 @@ defmodule KrystalMathApiWeb.ProjectStatusView do
       level: project_status.level
     }
   end
+
   def render("show.json", %{project_status: project_status}) do
     %{data: render_one(project_status, ProjectStatusView, "project_status.json")}
   end
-
 end

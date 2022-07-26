@@ -1,95 +1,106 @@
 defmodule KrystalMathApi.AdminOperations do
-    import Ecto.Query, warn: false
-    alias KrystalMathApi.Repo
-    alias KrystalMathApi.Accounts.{Role}
-    alias KrystalMathApi.Operations.{Team, Environment, TaskStatus, UserStatus}
-    alias KrystalMathApi.Projects.CategoriesAndImportance.{Priority, ProjectType, Status,ProjectCategoryType}
+  import Ecto.Query, warn: false
+  alias KrystalMathApi.Repo
+  alias KrystalMathApi.Accounts.{Role}
+  alias KrystalMathApi.Operations.{Team, Environment, TaskStatus, UserStatus}
 
-###### ACCOUNTS #####
+  alias KrystalMathApi.Projects.CategoriesAndImportance.{
+    Priority,
+    ProjectType,
+    Status,
+    ProjectCategoryType
+  }
 
-############ Role  ##########
-        @doc """
-    select all roles
-    """
-    def list_all_roles do
-        Role
-        |> Repo.all()
-    end
-        @doc """
-    selectone record roles
-    """
-    def get_user_role!(id) do
-        Role
-        |> Repo.get!(id)
-    end
-        @doc """
-    update role record
-    """
-    def update_role(%Role{} = user_role, attrs) do
-      user_role
-        |> Role.changeset(attrs)
-        |> Repo.update()
-    end
-        @doc """
-    create role record
-    """
-    def create_role(attrs \\ %{}) do
-        %Role{}
-        |> Role.changeset(attrs)
-        |> Repo.insert()
-    end
+  ###### ACCOUNTS #####
 
-    @doc """
-    delete Role Record
-    """
-    def delete_user_role(%Role{} = user_role) do
-      Repo.delete(user_role)
-    end
+  ############ Role  ##########
+  @doc """
+  select all roles
+  """
+  def list_all_roles do
+    Role
+    |> Repo.all()
+  end
 
-        @doc """
-    keeps track of every change
-    """
-    def change_role(%Role{}= user_role, attrs \\ %{}) do
-        Role.changeset(user_role, attrs)
-    end
+  @doc """
+  selectone record roles
+  """
+  def get_user_role!(id) do
+    Role
+    |> Repo.get!(id)
+  end
 
-##### TASKS #####
+  @doc """
+  update role record
+  """
+  def update_role(%Role{} = user_role, attrs) do
+    user_role
+    |> Role.changeset(attrs)
+    |> Repo.update()
+  end
 
-##### ENVIROMENT #####
-   @doc """
+  @doc """
+  create role record
+  """
+  def create_role(attrs \\ %{}) do
+    %Role{}
+    |> Role.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  delete Role Record
+  """
+  def delete_user_role(%Role{} = user_role) do
+    Repo.delete(user_role)
+  end
+
+  @doc """
+  keeps track of every change
+  """
+  def change_role(%Role{} = user_role, attrs \\ %{}) do
+    Role.changeset(user_role, attrs)
+  end
+
+  ##### TASKS #####
+
+  ##### ENVIROMENT #####
+  @doc """
   gets all environments
   """
   def list_all_environments do
     Repo.all(Environment)
   end
-    @doc """
+
+  @doc """
   get envioroment by id
   """
   def get_environment!(id), do: Repo.get!(Environment, id)
 
-   @doc """
+  @doc """
   select environment by name
   """
   def get_environment_by_name(name) when is_binary(name) do
-
     case Repo.get_by(Environment, name: name) do
       nil ->
         {:error, :not_found}
+
       environment ->
         {:ok, environment}
     end
   end
-     @doc """
+
+  @doc """
   add new environment
   """
 
-  def add_environment(attrs \\%{}) do
+  def add_environment(attrs \\ %{}) do
     %Environment{}
     |> Environment.changeset(attrs)
     |> Repo.insert()
   end
 
-      @doc """
+  @doc """
   update environment details
   """
   def update_environment(%Environment{} = environment, attrs) do
@@ -98,56 +109,57 @@ defmodule KrystalMathApi.AdminOperations do
     |> Repo.update()
   end
 
-   @doc """
-    delete Envroment Record
-    """
-    def delete_enviroment(%Environment{} = environment) do
-      Repo.delete(environment)
-    end
-
-         @doc """
-    keeps track of every change
-    """
-    def change_environment(%Environment{}= environment, attrs \\ %{}) do
-      Environment.changeset(environment, attrs)
+  @doc """
+  delete Envroment Record
+  """
+  def delete_enviroment(%Environment{} = environment) do
+    Repo.delete(environment)
   end
 
+  @doc """
+  keeps track of every change
+  """
+  def change_environment(%Environment{} = environment, attrs \\ %{}) do
+    Environment.changeset(environment, attrs)
+  end
 
-##### TASK STATUS  #### 
-   @doc """
+  ##### TASK STATUS  #### 
+  @doc """
   get task status by id
   """
   def get_task_status!(id), do: Repo.get!(TaskStatus, id)
 
-    @doc """
+  @doc """
   gets all task status
   """
   def list_all_task_status do
     Repo.all(TaskStatus)
   end
-    @doc """
+
+  @doc """
   select task status by name
   """
   def get_task_status_by_name(name) when is_binary(name) do
-
     case Repo.get_by(TaskStatus, name: name) do
       nil ->
         {:error, :not_found}
+
       task_status ->
         {:ok, task_status}
     end
   end
-   @doc """
+
+  @doc """
   add new task status
   """
 
-  def add_task_status(attrs \\%{}) do
+  def add_task_status(attrs \\ %{}) do
     %TaskStatus{}
     |> TaskStatus.changeset(attrs)
     |> Repo.insert()
   end
 
- @doc """
+  @doc """
   update task status details
   """
   def update_task_status(%TaskStatus{} = task_status, attrs) do
@@ -156,24 +168,24 @@ defmodule KrystalMathApi.AdminOperations do
     |> Repo.update()
   end
 
-     @doc """
-    delete task status Record
-    """
-    def delete_task_status(%TaskStatus{} = task_status) do
-      Repo.delete(task_status)
-    end
-
-         @doc """
-    keeps track of every change
-    """
-    def change_task_status(%TaskStatus{}= task_status, attrs \\ %{}) do
-      TaskStatus.changeset(task_status, attrs)
+  @doc """
+  delete task status Record
+  """
+  def delete_task_status(%TaskStatus{} = task_status) do
+    Repo.delete(task_status)
   end
 
-###### TEAM  ####
+  @doc """
+  keeps track of every change
+  """
+  def change_task_status(%TaskStatus{} = task_status, attrs \\ %{}) do
+    TaskStatus.changeset(task_status, attrs)
+  end
+
+  ###### TEAM  ####
   @doc """
   get team by id
-  
+
   def get_team!(id), do: Repo.get!(Team, id)
   """
   def get_team!(id) do
@@ -181,7 +193,8 @@ defmodule KrystalMathApi.AdminOperations do
     |> Repo.get!(id)
     |> Repo.preload(:users)
   end
-   @doc """
+
+  @doc """
   gets all teams
   """
   def list_all_teams do
@@ -189,30 +202,31 @@ defmodule KrystalMathApi.AdminOperations do
     |> Repo.all()
     |> Repo.preload(:team_lead)
   end
-     @doc """
+
+  @doc """
   gets all not active  teams
   """
   def list_not_active_teams do
-    
-     Repo.all(from t in Team, where: t.is_active == false)
+    Repo.all(from t in Team, where: t.is_active == false)
     |> Repo.preload(:team_lead)
   end
-       @doc """
+
+  @doc """
   gets all active  teams
   """
   def list_active_teams do
-    
     Repo.all(from t in Team, where: t.is_active == true)
     |> Repo.preload(:team_lead)
   end
 
-   @doc """
+  @doc """
   select team by name
   """
   def get_team_by_name(name) when is_binary(name) do
     case Repo.get_by(Team, name: name) do
       nil ->
         {:error, :not_found}
+
       team ->
         {:ok, team}
     end
@@ -222,12 +236,13 @@ defmodule KrystalMathApi.AdminOperations do
   add new team
   """
 
-  def add_team(attrs \\%{}) do
+  def add_team(attrs \\ %{}) do
     %Team{}
     |> Team.changeset(attrs)
     |> Repo.insert()
   end
-   @doc """
+
+  @doc """
   update team details
   """
 
@@ -253,54 +268,56 @@ defmodule KrystalMathApi.AdminOperations do
     team
     |> Team.activate_changeset(attrs)
     |> Repo.update()
-  end 
-
-
-      @doc """
-    delete team Record
-    """
-    def delete_team(%Team{} = team) do
-      Repo.delete(team)
-    end
-
-    @doc """
-    keeps track of every change
-    """
-    def change_team(%Team{}= team, attrs \\ %{}) do
-      Team.changeset(team, attrs)
   end
 
+  @doc """
+  delete team Record
+  """
+  def delete_team(%Team{} = team) do
+    Repo.delete(team)
+  end
 
-##### PROJECT ASSIGNMENTS ###########
+  @doc """
+  keeps track of every change
+  """
+  def change_team(%Team{} = team, attrs \\ %{}) do
+    Team.changeset(team, attrs)
+  end
 
-#### USER STATUS ######
- @doc """
+  ##### PROJECT ASSIGNMENTS ###########
+
+  #### USER STATUS ######
+  @doc """
   get all user status
   """
   def list_all_user_status do
     Repo.all(UserStatus)
   end
-   @doc """
+
+  @doc """
   get user Status by id
   """
-  # def get_user_status!(id), do: Repo.get!(Task, id)
 
+  # def get_user_status!(id), do: Repo.get!(Task, id)
 
   def get_user_status!(id) do
     UserStatus
     |> Repo.get!(id)
+
     # |> Repo.preload([:team, :user, :task_status, :environment])
   end
-   @doc """
+
+  @doc """
   add new task
   """
-  def add_user_status(attrs \\%{}) do
+  def add_user_status(attrs \\ %{}) do
     %UserStatus{}
     |> UserStatus.changeset(attrs)
     |> Repo.insert()
   end
+
   ### DELETE #####
-    @doc """
+  @doc """
   deletes the record of the user Status
 
   """
@@ -308,24 +325,25 @@ defmodule KrystalMathApi.AdminOperations do
     Repo.delete(user_status)
   end
 
-     @doc """
+  @doc """
   update user status details
   """
   def update_user_status(%UserStatus{} = user_status, attrs) do
     user_status
     |> UserStatus.changeset(attrs)
     |> Repo.update()
-  end  
+  end
 
   @doc """
   keeps track of every change
   """
-  def change_user_status(%UserStatus{}= user_status, attrs \\ %{}) do
+  def change_user_status(%UserStatus{} = user_status, attrs \\ %{}) do
     UserStatus.changeset(user_status, attrs)
   end
-##### MAIN PROJECTS ################
 
-###### Project STATUS   ######
+  ##### MAIN PROJECTS ################
+
+  ###### Project STATUS   ######
   @doc """
   get status  by id
   """
@@ -334,7 +352,8 @@ defmodule KrystalMathApi.AdminOperations do
     Status
     |> Repo.get!(id)
   end
-   @doc """
+
+  @doc """
   get all records
   """
   def get_all_project_statuses do
@@ -360,7 +379,7 @@ defmodule KrystalMathApi.AdminOperations do
     |> Repo.update()
   end
 
-    @doc """
+  @doc """
   deletes the record of the project Status
 
   """
@@ -371,61 +390,62 @@ defmodule KrystalMathApi.AdminOperations do
   @doc """
   keeps track of every change
   """
-  def change_project_status(%Status{}= project_status, attrs \\ %{}) do
+  def change_project_status(%Status{} = project_status, attrs \\ %{}) do
     Status.changeset(project_status, attrs)
   end
 
-####### PRIORITY ####
-    @doc """
-    get priority type by id
-    """
+  ####### PRIORITY ####
+  @doc """
+  get priority type by id
+  """
 
-    def get_priority!(id) do
-        Priority
-        |> Repo.get!(id)
-    end
-    @doc """
-    get all priority type records
-    """
-    def get_all_priorities  do
-        Repo.all(Priority)
-    end
+  def get_priority!(id) do
+    Priority
+    |> Repo.get!(id)
+  end
 
-    @doc """
-    create priority record
-    """
-    def create_priority(attrs \\ %{}) do
-        %Priority{}
-        |> Priority.changeset(attrs)
-        |> Repo.insert()
-    end
+  @doc """
+  get all priority type records
+  """
+  def get_all_priorities do
+    Repo.all(Priority)
+  end
 
-    @doc """
-    update priority record
-    """
+  @doc """
+  create priority record
+  """
+  def create_priority(attrs \\ %{}) do
+    %Priority{}
+    |> Priority.changeset(attrs)
+    |> Repo.insert()
+  end
 
-    def update_priority(%Priority{} = priority_type, attrs) do
-      priority_type
-        |> Priority.changeset(attrs)
-        |> Repo.update()
-    end
-        @doc """
-    deletes the record of the project Status
+  @doc """
+  update priority record
+  """
 
-    """
-    def delete_priority_type(%Priority{} = priority_type) do
-      Repo.delete(priority_type)
-    end
+  def update_priority(%Priority{} = priority_type, attrs) do
+    priority_type
+    |> Priority.changeset(attrs)
+    |> Repo.update()
+  end
 
-    @doc """
-    keeps track of every change
-    """
-    def change_priority_type(%Priority{}= priority_type, attrs \\ %{}) do
-      Status.changeset(priority_type, attrs)
-    end
+  @doc """
+  deletes the record of the project Status
 
+  """
+  def delete_priority_type(%Priority{} = priority_type) do
+    Repo.delete(priority_type)
+  end
 
-## PROJECT TYPE  ######
+  @doc """
+  keeps track of every change
+  """
+  def change_priority_type(%Priority{} = priority_type, attrs \\ %{}) do
+    Status.changeset(priority_type, attrs)
+  end
+
+  ## PROJECT TYPE  ######
 
   @doc """
   get project type  by id
@@ -435,10 +455,11 @@ defmodule KrystalMathApi.AdminOperations do
     ProjectType
     |> Repo.get!(id)
   end
-   @doc """
+
+  @doc """
   get all records
   """
-  def get_all_project_types  do
+  def get_all_project_types do
     Repo.all(ProjectType)
   end
 
@@ -461,7 +482,7 @@ defmodule KrystalMathApi.AdminOperations do
     |> Repo.update()
   end
 
-        @doc """
+  @doc """
   deletes the record of the project type
 
   """
@@ -472,11 +493,11 @@ defmodule KrystalMathApi.AdminOperations do
   @doc """
   keeps track of every change
   """
-  def change_project_type(%ProjectType{}= project_type, attrs \\ %{}) do
+  def change_project_type(%ProjectType{} = project_type, attrs \\ %{}) do
     ProjectType.changeset(project_type, attrs)
   end
 
-## PROJECT CATEGORY TYPE CONTEXT FUNCTIONS  ######
+  ## PROJECT CATEGORY TYPE CONTEXT FUNCTIONS  ######
 
   @doc """
   get project category type  by id
@@ -486,10 +507,11 @@ defmodule KrystalMathApi.AdminOperations do
     ProjectCategoryType
     |> Repo.get!(id)
   end
-   @doc """
+
+  @doc """
   get all records
   """
-  def get_all_project_category_types  do
+  def get_all_project_category_types do
     Repo.all(ProjectCategoryType)
   end
 
@@ -512,7 +534,7 @@ defmodule KrystalMathApi.AdminOperations do
     |> Repo.update()
   end
 
-        @doc """
+  @doc """
   deletes the record of the project category type
 
   """
@@ -523,9 +545,7 @@ defmodule KrystalMathApi.AdminOperations do
   @doc """
   keeps track of every change
   """
-  def change_project_category_type(%ProjectCategoryType{}= project_category_type, attrs \\ %{}) do
+  def change_project_category_type(%ProjectCategoryType{} = project_category_type, attrs \\ %{}) do
     ProjectCategoryType.changeset(project_category_type, attrs)
   end
-
-
 end

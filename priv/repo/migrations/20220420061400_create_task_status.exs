@@ -6,6 +6,7 @@ defmodule KrystalMathApi.Repo.Migrations.CreateTaskStatus do
       add :name, :string
       add :level, :string, null: true
     end
-    create unique_index(:task_statuses,[:name])
+
+    create unique_index(:task_statuses, [:name])
   end
 end

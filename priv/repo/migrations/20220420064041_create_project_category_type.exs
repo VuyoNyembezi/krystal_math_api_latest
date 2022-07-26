@@ -5,6 +5,7 @@ defmodule KrystalMathApi.Repo.Migrations.CreateProjectCategoryType do
     create table(:project_category_types) do
       add :name, :string
     end
-    create unique_index(:project_category_types,[:name])
+
+    create unique_index(:project_category_types, [:name])
   end
 end
