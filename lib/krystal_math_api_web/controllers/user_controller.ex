@@ -121,7 +121,7 @@ defmodule KrystalMathApiWeb.UserController do
         body = Jason.encode!(%{error: "user not found"})
 
         conn
-        |> send_resp(40, body)
+        |> send_resp(401, body)
     end
   end
 

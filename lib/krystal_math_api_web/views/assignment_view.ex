@@ -481,4 +481,11 @@ defmodule KrystalMathApiWeb.AssignmentView do
       completed: assignment_overview.completed
     }
   end
+
+  def render("assignment_counter.json", %{project_assignment: project_assignment}) do
+    %{
+      project_assignments: project_assignment.project_assignments,
+      max_value: project_assignment.max_value
+    }
+  end
 end

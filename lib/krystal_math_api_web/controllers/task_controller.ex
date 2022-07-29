@@ -83,10 +83,20 @@ defmodule KrystalMathApiWeb.TaskController do
   """
 
   def create_task(conn, %{"task" => task_params}) do
-    with {:ok, %Task{} = task} <- TaskOperations.add_task(task_params) do
-      conn
-      |> put_status(:created)
-      |> render("show_new.json", task: task)
+    team = task_params["team_id"]
+    user = task_params["user_id"]
+
+    case TaskOperations.user_task_assignment_check(team, user) do
+      {:ok, _task_assignments} ->
+        with {:ok, %Task{} = task} <- TaskOperations.add_task(task_params) do
+          conn
+          |> put_status(:created)
+          |> render("show_new.json", task: task)
+        end
+      {:error, _task_assignments} ->
+        body = Jason.encode!(%{error: "can't assign more tasks to this dev"})
+        conn
+        |> send_resp(412, body)
     end
   end
 
@@ -181,5 +191,10 @@ defmodule KrystalMathApiWeb.TaskController do
   def get_team_tasks_status_counter(conn, %{"id" => team_id}) do
     task_statuses = TaskOperations.team_tasks_statuses(team_id)
     render(conn, "task_statuses.json", task_statuses: task_statuses)
+  end
+
+  def user_task_assignment_check(conn, %{"team_id" => team_id, "user_id" => user_id}) do
+    task = TaskOperations.tasks_progress(team_id, user_id)
+    render(conn, "task_assignment.json", task: task)
   end
 end

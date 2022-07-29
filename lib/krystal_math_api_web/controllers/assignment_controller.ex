@@ -148,12 +148,26 @@ defmodule KrystalMathApiWeb.AssignmentController do
 
   # # Create Assignment
   def assign_project(conn, %{"projects_assignment" => project_assignment_params}) do
-    with {:ok, %ProjectAssignment{} = projects_assignment} <-
-           ProjectAssignments.create_project_assignment(project_assignment_params) do
-      conn
-      |> put_status(:created)
-      |> text("new member assigned to the project")
-      |> render(conn, "show.json", projects_assignment: projects_assignment)
+    IO.inspect(project_assignment_params)
+
+    team = project_assignment_params["team_id"]
+    user = project_assignment_params["user_id"]
+
+    case ProjectAssignments.user_assignment_check(team, user) do
+      {:ok, _assignments} ->
+        with {:ok, %ProjectAssignment{} = projects_assignment} <-
+               ProjectAssignments.create_project_assignment(project_assignment_params) do
+          conn
+          |> put_status(:created)
+          |> text("new member assigned to the project")
+          |> render(conn, "show.json", projects_assignment: projects_assignment)
+        end
+
+      {:error, _assignments} ->
+        body = Jason.encode!(%{error: "can't assign more project to this dev"})
+
+        conn
+        |> send_resp(412, body)
     end
   end
 
@@ -210,5 +224,11 @@ defmodule KrystalMathApiWeb.AssignmentController do
   def user_strategic_project_assignment(conn, %{"team_id" => team_id, "user_id" => user_id}) do
     assignment_overview = ProjectAssignments.user_strategic_assignment(team_id, user_id)
     render(conn, "assignment_status_overview.json", assignment_overview: assignment_overview)
+  end
+
+  # get user projects assignments 
+  def user_project_assignment_check(conn, %{"team_id" => team_id, "user_id" => user_id}) do
+    project_assignment = ProjectAssignments.assignments_progress(team_id, user_id)
+    render(conn, "assignment_counter.json", project_assignment: project_assignment)
   end
 end
