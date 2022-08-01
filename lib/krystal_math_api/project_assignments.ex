@@ -500,6 +500,46 @@ defmodule KrystalMathApi.ProjectAssignments do
     dev_assignment
   end
 
+  def user_assignment_check(team_id, user_id) do
+    query =
+      from(p in ProjectAssignment,
+        select: count(p.id),
+        where: p.team_id == ^team_id and p.user_id == ^user_id
+      )
+
+    assignments = Repo.one(query)
+    max_assigned = 6
+
+    cond do
+      max_assigned > assignments ->
+        {:ok, assignments}
+
+      assignments >= max_assigned ->
+        {:error, assignments}
+    end
+  end
+
+  defp user_assignment_checker(team_id, user_id) do
+    query =
+      from(p in ProjectAssignment,
+        select: count(p.id),
+        where: p.team_id == ^team_id and p.user_id == ^user_id
+      )
+
+    Repo.one(query)
+  end
+
+  def assignments_progress(team_id, user_id) do
+    max_assigned = 6
+
+    assignments_keys = %{
+      project_assignments: user_assignment_checker(team_id, user_id),
+      max_value: max_assigned
+    }
+
+    assignments_keys
+  end
+
   # Add Assignment Record bet projects
   def create_project_assignment(attrs \\ %{}) do
     %ProjectAssignment{}
@@ -534,6 +574,8 @@ defmodule KrystalMathApi.ProjectAssignments do
           p.project_category_type_id == ^category_id and p.team_id == ^team_id and
             p.user_id == ^user_id
       )
+
+    # IO.inspect()
 
     Repo.one(assignments)
   end

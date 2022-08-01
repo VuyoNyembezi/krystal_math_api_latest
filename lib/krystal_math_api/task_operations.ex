@@ -512,27 +512,28 @@ defmodule KrystalMathApi.TaskOperations do
   ### USER #####
   # overrall task counters 
   def user_completed_tasks_counter(team_id, user_id) do
-    completed_key = 5
+    completed_key = task_status_values()
 
     query =
       from(t in Task,
         select: count(t.id),
         where:
-          t.team_id == ^team_id and t.user_id == ^user_id and t.task_status_id == ^completed_key
+          t.team_id == ^team_id and t.user_id == ^user_id and
+            t.task_status_id == ^completed_key.completed_id
       )
 
     Repo.one(query)
   end
 
   def user_not_completed_tasks_counter(team_id, user_id) do
-    completed_key = 5
+    completed_key = task_status_values()
 
     query =
       from(t in Task,
         select: count(t.id),
         where:
           t.due_date >= ^DateTime.utc_now() and t.team_id == ^team_id and t.user_id == ^user_id and
-            t.task_status_id != ^completed_key and t.active == true
+            t.task_status_id != ^completed_key.completed_id and t.active == true
       )
 
     Repo.one(query)
@@ -548,14 +549,14 @@ defmodule KrystalMathApi.TaskOperations do
 
   #  all overdue tasks
   def user_overdue_tasks(team_id, user_id) do
-    completed_key = 5
+    completed_key = task_status_values()
 
     query =
       from(t in Task,
         select: count(t.id),
         where:
           t.due_date <= ^DateTime.utc_now() and t.team_id == ^team_id and t.user_id == ^user_id and
-            t.task_status_id != ^completed_key and t.active == true
+            t.task_status_id != ^completed_key.completed_id and t.active == true
       )
 
     Repo.one(query)
@@ -579,13 +580,14 @@ defmodule KrystalMathApi.TaskOperations do
 
   # user task status status counter
   def user_tasks_not_started(team_id, user_id) do
-    status_key = 1
+    status_key = task_status_values()
 
     query =
       from(t in Task,
         select: count(t.id),
         where:
-          t.team_id == ^team_id and t.user_id == ^user_id and t.task_status_id == ^status_key and
+          t.team_id == ^team_id and t.user_id == ^user_id and
+            t.task_status_id == ^status_key.not_started_id and
             t.active == true
       )
 
@@ -593,13 +595,14 @@ defmodule KrystalMathApi.TaskOperations do
   end
 
   def user_tasks_on_hold(team_id, user_id) do
-    status_key = 2
+    status_key = task_status_values()
 
     query =
       from(t in Task,
         select: count(t.id),
         where:
-          t.team_id == ^team_id and t.user_id == ^user_id and t.task_status_id == ^status_key and
+          t.team_id == ^team_id and t.user_id == ^user_id and
+            t.task_status_id == ^status_key.on_hold_id and
             t.active == true
       )
 
@@ -607,13 +610,14 @@ defmodule KrystalMathApi.TaskOperations do
   end
 
   def user_tasks_in_progress(team_id, user_id) do
-    status_key = 3
+    status_key = task_status_values()
 
     query =
       from(t in Task,
         select: count(t.id),
         where:
-          t.team_id == ^team_id and t.user_id == ^user_id and t.task_status_id == ^status_key and
+          t.team_id == ^team_id and t.user_id == ^user_id and
+            t.task_status_id == ^status_key.in_progress_id and
             t.active == true
       )
 
@@ -621,13 +625,14 @@ defmodule KrystalMathApi.TaskOperations do
   end
 
   def user_tasks_testing(team_id, user_id) do
-    status_key = 4
+    status_key = task_status_values()
 
     query =
       from(t in Task,
         select: count(t.id),
         where:
-          t.team_id == ^team_id and t.user_id == ^user_id and t.task_status_id == ^status_key and
+          t.team_id == ^team_id and t.user_id == ^user_id and
+            t.task_status_id == ^status_key.testing_id and
             t.active == true
       )
 
@@ -635,12 +640,14 @@ defmodule KrystalMathApi.TaskOperations do
   end
 
   def user_tasks_completed(team_id, user_id) do
-    status_key = 5
+    status_key = task_status_values()
 
     query =
       from(t in Task,
         select: count(t.id),
-        where: t.team_id == ^team_id and t.user_id == ^user_id and t.task_status_id == ^status_key
+        where:
+          t.team_id == ^team_id and t.user_id == ^user_id and
+            t.task_status_id == ^status_key.completed_id
       )
 
     Repo.one(query)
@@ -663,38 +670,42 @@ defmodule KrystalMathApi.TaskOperations do
   ############# TEAM #####
   # Team Status Counters
   def team_completed_tasks(team_id) do
-    completed_key = 5
+    status_key = task_status_values()
 
     query =
       from(t in Task,
         select: count(t.id),
-        where: t.team_id == ^team_id and t.task_status_id == ^completed_key and t.active == true
+        where:
+          t.team_id == ^team_id and t.task_status_id == ^status_key.completed_id and
+            t.active == true
       )
 
     Repo.one(query)
   end
 
   def team_not_completed_tasks(team_id) do
-    completed_key = 5
+    status_key = task_status_values()
 
     query =
       from(t in Task,
         select: count(t.id),
-        where: t.team_id == ^team_id and t.task_status_id != ^completed_key and t.active == true
+        where:
+          t.team_id == ^team_id and t.task_status_id != ^status_key.completed_id and
+            t.active == true
       )
 
     Repo.one(query)
   end
 
   def team_overdue_tasks(team_id) do
-    completed_key = 5
+    status_key = task_status_values()
 
     query =
       from t in Task,
         select: count(t.id),
         where:
           t.due_date <= ^DateTime.utc_now() and t.team_id == ^team_id and
-            t.task_status_id != ^completed_key and t.active == true
+            t.task_status_id != ^status_key.completed_id and t.active == true
 
     Repo.one(query)
   end
@@ -719,60 +730,68 @@ defmodule KrystalMathApi.TaskOperations do
 
   ## Team Task Status Counters 
   def team_tasks_not_started(team_id) do
-    status_key = 1
+    status_key = task_status_values()
 
     query =
       from(t in Task,
         select: count(t.id),
-        where: t.team_id == ^team_id and t.task_status_id == ^status_key and t.active == true
+        where:
+          t.team_id == ^team_id and t.task_status_id == ^status_key.not_started_id and
+            t.active == true
       )
 
     Repo.one(query)
   end
 
   def team_tasks_on_hold(team_id) do
-    status_key = 2
+    status_key = task_status_values()
 
     query =
       from(t in Task,
         select: count(t.id),
-        where: t.team_id == ^team_id and t.task_status_id == ^status_key and t.active == true
+        where:
+          t.team_id == ^team_id and t.task_status_id == ^status_key.on_hold_id and
+            t.active == true
       )
 
     Repo.one(query)
   end
 
   def team_tasks_in_progress(team_id) do
-    status_key = 3
+    status_key = task_status_values()
 
     query =
       from(t in Task,
         select: count(t.id),
-        where: t.team_id == ^team_id and t.task_status_id == ^status_key and t.active == true
+        where:
+          t.team_id == ^team_id and t.task_status_id == ^status_key.in_progress_id and
+            t.active == true
       )
 
     Repo.one(query)
   end
 
   def team_tasks_testing(team_id) do
-    status_key = 4
+    status_key = task_status_values()
 
     query =
       from(t in Task,
         select: count(t.id),
-        where: t.team_id == ^team_id and t.task_status_id == ^status_key and t.active == true
+        where:
+          t.team_id == ^team_id and t.task_status_id == ^status_key.testing_id and
+            t.active == true
       )
 
     Repo.one(query)
   end
 
   def team_tasks_completed(team_id) do
-    status_key = 5
+    status_key = task_status_values()
 
     query =
       from(t in Task,
         select: count(t.id),
-        where: t.team_id == ^team_id and t.task_status_id == ^status_key
+        where: t.team_id == ^team_id and t.task_status_id == ^status_key.completed_id
       )
 
     Repo.one(query)
@@ -790,5 +809,48 @@ defmodule KrystalMathApi.TaskOperations do
     }
 
     team_tasks_status
+  end
+
+  defp user_tasks_checker(team_id, user_id) do
+    status_key = task_status_values()
+
+    query =
+      from(t in Task,
+        select: count(t.id),
+        where:
+          t.team_id == ^team_id and t.user_id == ^user_id and
+            t.task_status_id != ^status_key.completed_id
+      )
+
+    Repo.one(query)
+  end
+
+  def tasks_progress(team_id, user_id) do
+    max_assigned = 20
+    tasks_keys = %{tasks_assigned: user_tasks_checker(team_id, user_id), max_value: max_assigned}
+
+    tasks_keys
+  end
+
+  def user_task_assignment_check(team_id, user_id) do
+       status_key = task_status_values()
+    query =
+      from(t in Task,
+        select: count(t.id),
+        where:
+          t.team_id == ^team_id and t.user_id == ^user_id and
+            t.task_status_id != ^status_key.completed_id
+      )
+
+    Repo.one(query)
+    task_assignments = Repo.one(query)
+    max_assigned = 20
+
+    cond do
+      max_assigned > task_assignments ->
+        {:ok, task_assignments}
+      task_assignments >= max_assigned ->
+        {:error, task_assignments}
+    end
   end
 end

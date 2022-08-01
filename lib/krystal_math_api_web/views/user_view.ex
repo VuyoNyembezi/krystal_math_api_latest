@@ -87,7 +87,7 @@ defmodule KrystalMathApiWeb.UserView do
       last_name: user.last_name,
       email: user.email,
       team: render_one(user.team, TeamView, "team.json"),
-    
+
       # environment: render_one(user.environment, environmentView, "environment.json"),
       project: render_many(user.project, ProjectView, "project.json")
     }
@@ -168,8 +168,6 @@ defmodule KrystalMathApiWeb.UserView do
   end
 
   # Project views
-
-  
 
   # environment view controls
 

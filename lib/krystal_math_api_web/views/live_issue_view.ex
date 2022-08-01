@@ -206,4 +206,27 @@ defmodule KrystalMathApiWeb.LiveIssueView do
       is_admin: user.is_admin
     }
   end
+
+
+    def render("project_statuses.json", %{project_statsuses: project_statsuses}) do
+    %{
+      not_started: project_statsuses.not_started,
+      planning: project_statsuses.planning,
+      under_investigation: project_statsuses.under_investigation,
+      on_hold: project_statsuses.on_hold,
+      in_progress: project_statsuses.in_progress,
+      dev_complete: project_statsuses.dev_complete,
+      qa: project_statsuses.qa,
+      deployed: project_statsuses.deployed
+    }
+  end
+
+    def render("live_issue_overview.json", %{project_overview: project_overview}) do
+    %{
+      all_project: project_overview.all_project,
+      pending: project_overview.pending,
+      completed: project_overview.completed,
+      active: project_overview.active
+    }
+  end
 end

@@ -333,6 +333,8 @@ defmodule KrystalMathApiWeb.Router do
     get "/strategic/project_assignments/user/count",
         AssignmentController,
         :user_strategic_project_assignment
+
+    get "/project_assignments/user/check", AssignmentController, :user_project_assignment_check
   end
 
   ######### Task Controller #########
@@ -383,6 +385,9 @@ defmodule KrystalMathApiWeb.Router do
     # team task status counter
 
     get "/team/task_status", TaskController, :get_team_tasks_status_counter
+
+    # Displays Capacity of the Dev
+    get "/task_assignent/user/check", TaskController, :user_task_assignment_check
   end
 
   # Enables LiveDashboard only for development

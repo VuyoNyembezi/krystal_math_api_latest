@@ -329,4 +329,11 @@ defmodule KrystalMathApiWeb.TaskView do
       completed: tasks_overview.completed
     }
   end
+
+  def render("task_assignment.json", %{task: task}) do
+    %{
+      tasks_assigned: task.tasks_assigned,
+      max_value: task.max_value
+    }
+  end
 end

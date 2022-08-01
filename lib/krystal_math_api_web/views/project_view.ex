@@ -491,14 +491,7 @@ defmodule KrystalMathApiWeb.ProjectView do
     }
   end
 
-  def render("live_issue_overview.json", %{project_overview: project_overview}) do
-    %{
-      all_project: project_overview.all_project,
-      pending: project_overview.pending,
-      completed: project_overview.completed,
-      active: project_overview.active
-    }
-  end
+
 
   def render("full_project_overview.json", %{project_overview: project_overview}) do
     %{
