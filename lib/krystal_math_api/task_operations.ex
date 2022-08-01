@@ -844,7 +844,7 @@ defmodule KrystalMathApi.TaskOperations do
 
     Repo.one(query)
     task_assignments = Repo.one(query)
-    max_assigned = 0
+    max_assigned = 20
 
     cond do
       max_assigned > task_assignments ->
